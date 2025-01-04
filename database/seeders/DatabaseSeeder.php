@@ -2,9 +2,13 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use App\Models\Company;
+use App\Models\Privilege;
+use App\Models\Role;
+use App\Models\Customer;
+use App\Models\UserAccount;
 
 class DatabaseSeeder extends Seeder
 {
@@ -13,11 +17,44 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
+        $company = Company::first() ?? Company::factory()->create();
+        // Customer::factory()->count(5)->create();
 
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-        ]);
+        // Define specific privileges
+        $privileges = [
+            'Manage Users',
+            'View Invoices',
+            'Edit Invoices',
+            'Manage Invoices',
+            'Create Sales Order',
+            'View Sales Orders',
+            'View Financial Records',
+            'Approve Invoices',
+            'Manage Roles',
+        ];
+
+        foreach ($privileges as $privilege) {
+            if (!Privilege::where('name', $privilege)->exists()) {
+                Privilege::factory()->create(['name' => $privilege]);
+            }
+        }
+    
+        // Define specific roles
+        $roles = [
+            'admin',
+            'accountant',
+            'salesman',
+        ];
+
+        foreach ($roles as $role) {
+            // Check if the role already exists before creating
+            if (!Role::where('name', $role)->exists()) {
+                Role::factory()->create(['name' => $role]);
+            }
+        }
+
+        UserAccount::factory()->create();
+        
+        
     }
 }
