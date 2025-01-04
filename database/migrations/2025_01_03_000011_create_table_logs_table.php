@@ -9,7 +9,7 @@ return new class extends Migration {
             $table->id('log_id');
             $table->dateTime('time_action');
             $table->string('action', 255);
-            $table->foreignId('account_id')->references('account_id')->on('user_accounts')->onDelete('cascade');
+            $table->foreignId('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->foreignId('invoice_id')->references('invoice_id')->on('invoices')->onDelete('cascade');
         });
     }

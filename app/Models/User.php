@@ -3,9 +3,9 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 
-class UserAccount extends Model
+class User extends Authenticatable
 {
     use HasFactory;
 
@@ -24,6 +24,10 @@ class UserAccount extends Model
     protected $casts = [
         'last_login' => 'datetime',
         'failed_attempts' => 'integer',
+    ];
+
+    protected $hidden = [
+        'password',
     ];
 
     public function role()
