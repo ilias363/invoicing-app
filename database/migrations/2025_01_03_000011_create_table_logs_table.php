@@ -7,10 +7,10 @@ return new class extends Migration {
     public function up(): void {
         Schema::create('logs', function (Blueprint $table) {
             $table->id('log_id');
-            $table->dateTime('time_activity');
+            $table->dateTime('time_action');
             $table->string('action', 255);
-            $table->foreignId('account_id')->references('account_id')->on('user_account')->onDelete('cascade');
-            $table->foreignId('invoice_id')->references('invoice_id')->on('invoice')->onDelete('cascade');
+            $table->foreignId('account_id')->references('account_id')->on('user_accounts')->onDelete('cascade');
+            $table->foreignId('invoice_id')->references('invoice_id')->on('invoices')->onDelete('cascade');
         });
     }
 

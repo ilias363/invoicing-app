@@ -6,14 +6,14 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration {
     public function up(): void {
-        Schema::create('privilege', function (Blueprint $table) {
+        Schema::create('privileges', function (Blueprint $table) {
             $table->id('privilege_id');
             $table->string('name', 50);
         });
     }
 
     public function down(): void {
-        Schema::dropIfExists('privilege');
+        Schema::dropIfExists('privileges');
     }
 };
 

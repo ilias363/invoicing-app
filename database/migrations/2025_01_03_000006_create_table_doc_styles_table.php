@@ -5,7 +5,7 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration {
     public function up(): void {
-        Schema::create('doc_style', function (Blueprint $table) {
+        Schema::create('doc_styles', function (Blueprint $table) {
             $table->id('doc_style_id');
             $table->string('layout', 50)->nullable();
             $table->string('font', 50)->nullable();
@@ -18,7 +18,7 @@ return new class extends Migration {
     }
 
     public function down(): void {
-        Schema::dropIfExists('doc_style');
+        Schema::dropIfExists('doc_styles');
     }
 };
 

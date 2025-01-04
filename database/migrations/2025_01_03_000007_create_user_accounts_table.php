@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration {
     public function up(): void {
-        Schema::create('user_account', function (Blueprint $table) {
+        Schema::create('user_accounts', function (Blueprint $table) {
             $table->id('account_id');
             $table->string('first_name', 50);
             $table->string('last_name', 50);
@@ -17,12 +17,12 @@ return new class extends Migration {
             $table->integer('failed_attempts')->default(0);
             $table->string('account_status', 50)->nullable();
             $table->timestamps();
-            $table->foreignId('role_id')->references('role_id')->on('role')->onDelete('cascade');
+            $table->foreignId('role_id')->references('role_id')->on('roles')->onDelete('cascade');
         });
     }
 
     public function down(): void {
-        Schema::dropIfExists('user_account');
+        Schema::dropIfExists('user_accounts');
     }
 };
 
