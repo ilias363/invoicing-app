@@ -12,10 +12,10 @@ return new class extends Migration {
             $table->string('last_name', 50);
             $table->string('email', 255)->unique();
             $table->string('phone', 20)->nullable();
-            $table->string('password_hash', 255);
+            $table->string('password', 255);
             $table->dateTime('last_login')->nullable();
             $table->integer('failed_attempts')->default(0);
-            $table->string('account_status', 50)->nullable();
+            $table->enum('account_status', ['active','inactive','suspended','closed'])->default('active');
             $table->timestamps();
             $table->foreignId('role_id')->references('role_id')->on('roles')->onDelete('cascade');
         });

@@ -11,7 +11,13 @@ return new class extends Migration {
             $table->text('description')->nullable();
             $table->double('price');
             $table->integer('stock_quantity');
-            $table->string('category', 50)->nullable();
+            $table->enum('category', [
+                'Categorie 1',
+                'Categorie 2',
+                'Categorie 3',
+                'Categorie 4',
+                'Categorie 5',
+            ])->nullable();
             $table->boolean('is_active')->default(true);
         });
     }
