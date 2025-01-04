@@ -14,7 +14,7 @@ return new class extends Migration {
             $table->text('notes')->nullable();
             $table->date('due_date')->nullable();
             $table->boolean('is_active')->default(true);
-            $table->string('payment_method', 50)->nullable();
+            $table->enum('payment_method', ['Credit Card', 'Bank Transfer', 'Cash'])->nullable();
             $table->double('tax')->nullable();
             $table->foreignId('customer_id')->references('customer_id')->on('customers')->onDelete('cascade');
             $table->foreignId('doc_style_id')->references('doc_style_id')->on('doc_styles')->onDelete('cascade');

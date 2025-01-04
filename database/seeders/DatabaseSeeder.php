@@ -8,6 +8,8 @@ use App\Models\Company;
 use App\Models\Privilege;
 use App\Models\Role;
 use App\Models\Customer;
+use App\Models\DocStyle;
+use App\Models\Product;
 use App\Models\UserAccount;
 
 class DatabaseSeeder extends Seeder
@@ -18,7 +20,7 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         $company = Company::first() ?? Company::factory()->create();
-        // Customer::factory()->count(5)->create();
+        Customer::factory()->count(5)->create();
 
         // Define specific privileges
         $privileges = [
@@ -39,7 +41,6 @@ class DatabaseSeeder extends Seeder
             }
         }
     
-        // Define specific roles
         $roles = [
             'admin',
             'accountant',
@@ -54,6 +55,9 @@ class DatabaseSeeder extends Seeder
         }
 
         UserAccount::factory()->create();
+
+        DocStyle::factory()->count(2)->create();
+        Product::factory()->count(10)->create();
         
         
     }

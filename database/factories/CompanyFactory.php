@@ -10,7 +10,6 @@ use Illuminate\Database\Eloquent\Factories\Factory;
  */
 class CompanyFactory extends Factory
 {
-    // Specify the model the factory is for
     protected $model = Company::class;
 
     /**
