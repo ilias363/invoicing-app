@@ -10,7 +10,8 @@ use App\Models\Role;
 use App\Models\Customer;
 use App\Models\DocStyle;
 use App\Models\Product;
-use App\Models\UserAccount;
+use App\Models\User;
+use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
 {
@@ -54,7 +55,21 @@ class DatabaseSeeder extends Seeder
             }
         }
 
-        UserAccount::factory()->create();
+        User::factory()->create([
+            'email' => 'user1@gmail.com',
+            'password' => Hash::make('user1'),
+            'role_id' => 1,
+        ]);
+        User::factory()->create([
+            'email' => 'user2@gmail.com',
+            'password' => Hash::make('user2'),
+            'role_id' => 2,
+        ]);
+        User::factory()->create([
+            'email' => 'user3@gmail.com',
+            'password' => Hash::make('user3'),
+            'role_id' => 3,
+        ]);
 
         DocStyle::factory()->count(2)->create();
         Product::factory()->count(10)->create();
