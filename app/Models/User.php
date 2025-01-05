@@ -34,4 +34,9 @@ class User extends Authenticatable
     {
         return $this->belongsTo(Role::class, 'role_id', 'role_id');
     }
+
+    public function logs()
+    {
+        return $this->hasMany(Log::class, 'log_id', 'log_id');
+    }
 }

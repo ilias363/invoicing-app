@@ -18,4 +18,9 @@ class Customer extends Model
         'email',
     ];
 
+    public function invoices()
+    {
+        return $this->hasMany(Invoice::class, 'invoice_id', 'invoice_id');
+    }
+
 }

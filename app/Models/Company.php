@@ -19,4 +19,6 @@ class Company extends Model
         'tax_id',
         'logo',
     ];
+
+
 }

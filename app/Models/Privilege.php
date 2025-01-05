@@ -14,9 +14,6 @@ class Privilege extends Model
         'name',
     ];
 
-    /**
-    * Define the many-to-many relationship with Role.
-    */
     public function roles()
     {
         return $this->belongsToMany(Role::class, 'role_privilege', 'privilege_id', 'role_id');

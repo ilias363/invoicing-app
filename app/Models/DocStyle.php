@@ -20,4 +20,9 @@ class DocStyle extends Model
         'template_path',
         'is_default',
     ];
+
+    public function invoices()
+    {
+        return $this->hasMany(Invoice::class, 'invoice_id', 'invoice_id');
+    }
 }

@@ -19,4 +19,9 @@ class Product extends Model
         'category',
         'is_active',
     ];
+
+    public function invoices()
+    {
+        return $this->belongsToMany(Invoice::class,'invoice_product', 'product_id', 'invoice_id');
+    }
 }
