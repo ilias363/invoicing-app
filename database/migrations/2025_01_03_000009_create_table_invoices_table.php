@@ -13,7 +13,7 @@ return new class extends Migration {
             $table->enum('payment_status', ['pending', 'completed', 'failed'])->nullable();
             $table->text('notes')->nullable();
             $table->date('due_date')->nullable();
-            $table->boolean('is_active')->default(true);
+            $table->boolean('is_deleted')->default(false);
             $table->enum('payment_method', ['Credit Card', 'Bank Transfer', 'Cash'])->nullable();
             $table->double('tax')->nullable();
             $table->foreignId('customer_id')->references('customer_id')->on('customers')->onDelete('cascade');
