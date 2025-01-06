@@ -25,9 +25,16 @@ Route::middleware('auth')->group(function () {
 
 Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/admin', function () {
-        return Inertia::render('Admin/Home', ['user' => Auth::user()]);
+        return Inertia::render('Admin/Home');
     })->name('admin.home');
 });
+
+Route::middleware(['auth', 'role:admin'])->group(function () {
+    Route::get('/admin/create-invoice', function () {
+        return Inertia::render('Admin/CreateInvoice');
+    })->name('admin.create-invoice');
+});
+
 
 Route::middleware(['auth', 'role:salesman'])->group(function () {
     Route::get('/salesman', function () {
