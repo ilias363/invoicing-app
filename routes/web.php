@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\InvoiceController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -20,6 +21,8 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/admin/create-invoice', function () {
         return Inertia::render('Admin/CreateInvoice');
     })->name('admin.create-invoice');
+
+    Route::get('/admin/invoices', [InvoiceController::class, 'index'])->name('admin.invoices');
 
     Route::get('/admin/create-invoice/preview', function () {
         return Inertia::render('Admin/InvoicePreview');

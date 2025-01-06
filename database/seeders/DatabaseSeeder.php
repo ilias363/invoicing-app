@@ -9,6 +9,8 @@ use App\Models\Privilege;
 use App\Models\Role;
 use App\Models\Customer;
 use App\Models\DocStyle;
+use App\Models\Invoice;
+use App\Models\Log;
 use App\Models\Product;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
@@ -20,10 +22,14 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        $company = Company::first() ?? Company::factory()->create();
-        Customer::factory()->count(5)->create();
+        Company::first() ?? Company::factory()->create();
 
-        // Define specific privileges
+        DocStyle::factory()->count(3)->create();
+
+        Product::factory()->count(50)->create();
+
+        Customer::factory()->count(30)->create();
+
         $privileges = [
             'Manage Users',
             'View Invoices',
@@ -41,7 +47,7 @@ class DatabaseSeeder extends Seeder
                 Privilege::factory()->create(['name' => $privilege]);
             }
         }
-    
+
         $roles = [
             'admin',
             'accountant',
@@ -49,31 +55,57 @@ class DatabaseSeeder extends Seeder
         ];
 
         foreach ($roles as $role) {
-            // Check if the role already exists before creating
             if (!Role::where('name', $role)->exists()) {
                 Role::factory()->create(['name' => $role]);
             }
         }
 
-        User::factory()->create([
-            'email' => 'user1@gmail.com',
-            'password' => Hash::make('user1'),
-            'role_id' => 1,
-        ]);
-        User::factory()->create([
-            'email' => 'user2@gmail.com',
-            'password' => Hash::make('user2'),
-            'role_id' => 2,
-        ]);
-        User::factory()->create([
-            'email' => 'user3@gmail.com',
-            'password' => Hash::make('user3'),
-            'role_id' => 3,
-        ]);
+        $users = [
+            'admin' => [
+                'email' => 'user1@gmail.com',
+                'password' => 'user1',
+            ],
+            'accountant' => [
+                'email' => 'user2@gmail.com',
+                'password' => 'user2',
+            ],
+            'salesman' => [
+                'email' => 'user3@gmail.com',
+                'password' => 'user3',
+            ],
+        ];
 
-        DocStyle::factory()->count(2)->create();
-        Product::factory()->count(10)->create();
-        
-        
+        foreach ($users as $role => $user) {
+            if (!User::where('email', $user['email'])->exists()) {
+                $role = Role::where('name', $role)->first();
+                $user['role_id'] = $role->id;
+                $user['password'] = Hash::make($user['password']);
+                User::factory()->create($user);
+            }
+        }
+
+
+        $customers = Customer::all();
+        $docStyles = DocStyle::all();
+        $products = Product::all();
+
+        Invoice::factory(50)->create([
+            'customer_id' => $customers->random()->id,
+            'doc_style_id' => $docStyles->random()->id,
+        ])->each(function ($invoice) use ($products) {
+            $selectedProducts = $products->random(rand(1, 5));
+            foreach ($selectedProducts as $product) {
+                $invoice->products()->attach($product->id, [
+                    'quantity' => rand(1, 20),
+                ]);
+            }
+        });
+
+        $users = User::all();
+        $invoices = Invoice::all();
+        Log::factory(30)->create([
+            'user_id' => $users->random()->id,
+            'invoice_id' => $invoices->random()->id,
+        ]);
     }
 }
