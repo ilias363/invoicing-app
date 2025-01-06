@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration {
     public function up(): void {
         Schema::create('doc_styles', function (Blueprint $table) {
-            $table->id('doc_style_id');
+            $table->id();
             $table->string('layout', 50)->nullable();
             $table->string('font', 50)->nullable();
             $table->string('color1', 50)->nullable();

@@ -6,18 +6,18 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration {
     public function up(): void {
         Schema::create('invoices', function (Blueprint $table) {
-            $table->id('invoice_id');
+            $table->id();
             $table->date('invoice_date');
             $table->double('total_amount');
             $table->enum('status', ['draft', 'issued', 'paid', 'cancelled'])->nullable();
             $table->enum('payment_status', ['pending', 'completed', 'failed'])->nullable();
             $table->text('notes')->nullable();
             $table->date('due_date')->nullable();
-            $table->boolean('is_active')->default(true);
+            $table->softDeletes();
             $table->enum('payment_method', ['Credit Card', 'Bank Transfer', 'Cash'])->nullable();
             $table->double('tax')->nullable();
-            $table->foreignId('customer_id')->references('customer_id')->on('customers')->onDelete('cascade');
-            $table->foreignId('doc_style_id')->references('doc_style_id')->on('doc_styles')->onDelete('cascade');
+            $table->foreignId('customer_id')->constrained('customers')->onDelete('cascade');
+            $table->foreignId('doc_style_id')->constrained('doc_styles')->onDelete('cascade');
         });
     }
 

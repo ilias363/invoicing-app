@@ -4,10 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Invoice extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     public $timestamps = false;
 
@@ -18,7 +19,6 @@ class Invoice extends Model
         'payment_status',
         'notes',
         'due_date',
-        'is_active',
         'payment_method',
         'tax',
         'customer_id',
@@ -27,21 +27,21 @@ class Invoice extends Model
 
     public function customer()
     {
-        return $this->belongsTo(Customer::class, 'customer_id', 'customer_id');
+        return $this->belongsTo(Customer::class, 'customer_id', 'id');
     }
 
     public function docStyle()
     {
-        return $this->belongsTo(DocStyle::class, 'doc_style_id', 'doc_style_id');
+        return $this->belongsTo(DocStyle::class, 'doc_style_id', 'id');
     }
 
     public function logs()
     {
-        return $this->hasMany(Log::class, 'log_id', 'log_id');
+        return $this->hasMany(Log::class, 'invoice_id', 'id');
     }
 
     public function products()
     {
-        return $this->belongsToMany(Product::class,'invoice_product', 'invoice_id', 'product_id');
+        return $this->belongsToMany(Product::class, 'invoice_product', 'invoice_id', 'product_id');
     }
 }

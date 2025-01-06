@@ -34,7 +34,7 @@ class RoleFactory extends Factory
             switch ($role->name) {
                 case 'admin':
                     // Admin gets all privileges
-                    $role->privileges()->attach(Privilege::pluck('privilege_id'));
+                    $role->privileges()->attach(Privilege::pluck('id'));
                     break;
                 case 'accountant':
                     // Accountant gets limited privileges
@@ -43,14 +43,14 @@ class RoleFactory extends Factory
                         'Edit Invoices',
                         'Manage Invoices',
                         'View Financial Records',
-                    ])->pluck('privilege_id'));
+                    ])->pluck('id'));
                     break;
                 case 'salesman':
                     // Salesman gets limited privileges
                     $role->privileges()->attach(Privilege::whereIn('name', [
                         'Create Sales Order',
                         'View Sales Orders',
-                    ])->pluck('privilege_id'));
+                    ])->pluck('id'));
                     break;
             }
         });

@@ -23,6 +23,6 @@ class DocStyle extends Model
 
     public function invoices()
     {
-        return $this->hasMany(Invoice::class, 'invoice_id', 'invoice_id');
+        return $this->hasMany(Invoice::class, 'doc_style_id', 'id');
     }
 }

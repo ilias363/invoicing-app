@@ -26,7 +26,6 @@ class ProductFactory extends Factory
                 'Categorie 4',
                 'Categorie 5',
             ]),
-            'is_active' => $this->faker->boolean,
         ];
     }
 }

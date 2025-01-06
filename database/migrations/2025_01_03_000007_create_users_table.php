@@ -22,7 +22,7 @@ return new class extends Migration
             $table->integer('failed_attempts')->default(0);
             $table->enum('account_status', ['active','inactive','suspended','closed'])->default('active');
             $table->timestamps();
-            $table->foreignId('role_id')->references('role_id')->on('roles')->onDelete('cascade');
+            $table->foreignId('role_id')->constrained('roles')->onDelete('cascade');
         });
     }
 
