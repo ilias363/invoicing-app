@@ -7,34 +7,20 @@ use Inertia\Inertia;
 
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);
-Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-Route::get('/contact', function () {
-    return Inertia::render('Contact');
-})->name('contact');
-
-Route::get('/about', function () {
-    return Inertia::render('About');
-})->name('about');
-
-Route::middleware('auth')->group(function () {
-    Route::get('/', function () {
-        return Inertia::render('Home', ['user' => Auth::user()]);
-    })->name('home');
+Route::middleware('auth')->group(function () {    
+    Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 });
 
 Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/admin', function () {
         return Inertia::render('Admin/Home');
     })->name('admin.home');
-});
 
-Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/admin/create-invoice', function () {
         return Inertia::render('Admin/CreateInvoice');
     })->name('admin.create-invoice');
 });
-
 
 Route::middleware(['auth', 'role:salesman'])->group(function () {
     Route::get('/salesman', function () {
