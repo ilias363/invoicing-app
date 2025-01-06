@@ -40,7 +40,6 @@ const Home = () => {
     return (
         <div className="min-h-screen flex flex-col items-center bg-gradient-to-r bg-[#DCDCDC]">
             <Header></Header>
-            {/* <SubHeader></SubHeader> */}
             <div className='flex flex-row items-center justify-center space-x-8'>
                 <div className="p-6 mt-6">
                     <LogsBox logs={logs} />
