@@ -90,8 +90,8 @@ class DatabaseSeeder extends Seeder
         $products = Product::all();
 
         Invoice::factory(50)->create([
-            'customer_id' => $customers->random()->id,
-            'doc_style_id' => $docStyles->random()->id,
+            'customer_id' => fn () => $customers->random()->id,
+            'doc_style_id' => fn () => $docStyles->random()->id,
         ])->each(function ($invoice) use ($products) {
             $selectedProducts = $products->random(rand(1, 5));
             foreach ($selectedProducts as $product) {
@@ -103,9 +103,10 @@ class DatabaseSeeder extends Seeder
 
         $users = User::all();
         $invoices = Invoice::all();
+
         Log::factory(30)->create([
-            'user_id' => $users->random()->id,
-            'invoice_id' => $invoices->random()->id,
+            'user_id' => fn () => $users->random()->id,
+            'invoice_id' => fn () => $invoices->random()->id,
         ]);
     }
 }

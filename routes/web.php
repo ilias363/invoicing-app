@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\InvoiceController;
+use App\Http\Controllers\LogController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -14,15 +15,12 @@ Route::middleware('auth')->group(function () {
 });
 
 Route::middleware(['auth', 'role:admin'])->group(function () {
-    Route::get('/admin', function () {
-        return Inertia::render('Admin/Home');
-    })->name('admin.home');
-
     Route::get('/admin/create-invoice', function () {
         return Inertia::render('Admin/CreateInvoice');
     })->name('admin.create-invoice');
 
     Route::get('/admin/invoices', [InvoiceController::class, 'index'])->name('admin.invoices');
+    Route::get('/admin', [LogController::class, 'index'])->name('admin.home');
 
     Route::get('/admin/create-invoice/preview', function () {
         return Inertia::render('Admin/InvoicePreview');
