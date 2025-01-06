@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 import { FaEllipsisH } from "react-icons/fa";
 
-const ListInvoices = ({ invoices, pages, searchTerm }) => {
-    const [openInvoiceId, setOpenInvoiceId] = useState(null);
+const ListCustomers = ({ customers, pages, searchTerm }) => {
+    const [openCustomerId, setOpenCustomerId] = useState(null);
 
-    const toggleActionsMenu = (invoiceId) => {
-        setOpenInvoiceId(openInvoiceId === invoiceId ? null : invoiceId);
+    const toggleActionsMenu = (customerId) => {
+        setOpenCustomerId(openCustomerId === customerId ? null : customerId);
     };
 
     return (
@@ -13,67 +13,46 @@ const ListInvoices = ({ invoices, pages, searchTerm }) => {
             <table className="w-full text-center border-collapse border-2 border-gray-200">
                 <thead className="bg-gray-300">
                     <tr className="text-lg font-semibold text-gray-600">
-                        <th className="border px-6 py-3">Invoice ID</th>
-                        <th className="border px-6 py-3">Customer</th>
-                        <th className="border px-6 py-3">Total Amount</th>
-                        <th className="border px-6 py-3">Status</th>
-                        <th className="border px-6 py-3">Payment Status</th>
-                        <th className="border px-6 py-3">Date Created</th>
+                        <th className="border px-6 py-3">Customer ID</th>
+                        <th className="border px-6 py-3">Name</th>
+                        <th className="border px-6 py-3">E-mail</th>
+                        <th className="border px-6 py-3">Phone Number</th>
+                        <th className="border px-6 py-3">Address</th>
                         <th className="border px-6 py-3">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {invoices.map((invoice) => (
+                    {customers.map((customer) => (
                         <tr
-                            key={invoice.id}
+                            key={customer.id}
                             className="hover:bg-gray-50 transition duration-200"
                         >
                             <td className="border px-6 py-4 text-gray-800">
-                                {invoice.id}
+                                {customer.id}
                             </td>
                             <td className="border px-6 py-4 text-gray-800">
-                                {invoice.customer.last_name}{" "}
-                                {invoice.customer.first_name}
+                                {customer.first_name} {customer.last_name}
                             </td>
                             <td className="border px-6 py-4 text-gray-800">
-                                {invoice.total_amount} MAD
+                                {customer.email}
                             </td>
                             <td className="border px-6 py-4 text-gray-800">
-                                <span
-                                    className={`inline-block px-2 py-1 rounded-full text-xs font-semibold ${
-                                        invoice.status === "Paid"
-                                            ? "bg-green-100 text-green-600"
-                                            : "bg-yellow-100 text-yellow-600"
-                                    }`}
-                                >
-                                    {invoice.status}
-                                </span>
+                                {customer.phone}
                             </td>
                             <td className="border px-6 py-4 text-gray-800">
-                                <span
-                                    className={`inline-block px-2 py-1 rounded-full text-xs font-semibold ${
-                                        invoice.payment_status === "Paid"
-                                            ? "bg-green-100 text-green-600"
-                                            : "bg-red-100 text-red-600"
-                                    }`}
-                                >
-                                    {invoice.payment_status}
-                                </span>
-                            </td>
-                            <td className="border px-6 py-4 text-gray-800">
-                                {invoice.invoice_date}
+                                {customer.address}
                             </td>
                             <td className="border px-6 py-4 text-center">
                                 <button
                                     onClick={() =>
-                                        toggleActionsMenu(invoice.id)
+                                        toggleActionsMenu(customer.id)
                                     }
                                     className="p-2 text-gray-600 hover:text-gray-800 focus:outline-none"
                                 >
                                     <FaEllipsisH size={25} />
                                 </button>
 
-                                {openInvoiceId === invoice.id && (
+                                {openCustomerId === customer.id && (
                                     <div
                                         className="absolute w-24 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5"
                                         role="menu"
@@ -127,8 +106,8 @@ const ListInvoices = ({ invoices, pages, searchTerm }) => {
                             link.label === "Next &raquo;" ||
                             link.label === "&laquo; Previous"
                                 ? link.url === null
-                                    ? "bg-gray-400 text-gray-600 pointer-events-none"
-                                    : "bg-white"
+                                    ? "text-gray-600 pointer-events-none"
+                                    : ""
                                 : ""
                         }
                         ${
@@ -158,4 +137,4 @@ const ListInvoices = ({ invoices, pages, searchTerm }) => {
     );
 };
 
-export default ListInvoices;
+export default ListCustomers;

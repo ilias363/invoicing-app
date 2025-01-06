@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Invoice;
+use App\Models\Product;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
-class InvoiceController extends Controller
+class ProductController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -15,20 +15,15 @@ class InvoiceController extends Controller
     {
         $search = $request->get('search', '');
 
-        $invoices = Invoice::query()
-            ->with('customer')
+        $products = Product::query()
             ->when($search, function ($query, $search) {
-                $query->whereHas('customer', function ($query) use ($search) {
-                    $query->where('first_name', 'like', "%{$search}%")
-                    ->orWhere('last_name', 'like', "%{$search}%");
-                })
-                    ->orWhere('status', 'like', "%{$search}%")
-                    ->orWhere('payment_status', 'like', "%{$search}%");
+                $query->where('name', 'like', "%{$search}%")
+                    ->orWhere('category', 'like', "%{$search}%");
             })
-            ->paginate(8);
+            ->paginate(6);
 
-        return Inertia::render('Admin/Invoices', [
-            'invoicesData' => response()->json($invoices),
+        return Inertia::render('Admin/Products', [
+            'productsData' => response()->json($products),
             'searchTerm' => $search,
         ]);
     }
@@ -52,7 +47,7 @@ class InvoiceController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Invoice $invoice)
+    public function show(Product $product)
     {
         //
     }
@@ -60,7 +55,7 @@ class InvoiceController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Invoice $invoice)
+    public function edit(Product $product)
     {
         //
     }
@@ -68,7 +63,7 @@ class InvoiceController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Invoice $invoice)
+    public function update(Request $request, Product $product)
     {
         //
     }
@@ -76,7 +71,7 @@ class InvoiceController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Invoice $invoice)
+    public function destroy(Product $product)
     {
         //
     }

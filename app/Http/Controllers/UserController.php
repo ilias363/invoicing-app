@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Invoice;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
-class InvoiceController extends Controller
+class UserController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -15,20 +15,20 @@ class InvoiceController extends Controller
     {
         $search = $request->get('search', '');
 
-        $invoices = Invoice::query()
-            ->with('customer')
+        $users = User::query()
+            ->with('role')
             ->when($search, function ($query, $search) {
-                $query->whereHas('customer', function ($query) use ($search) {
-                    $query->where('first_name', 'like', "%{$search}%")
-                    ->orWhere('last_name', 'like', "%{$search}%");
-                })
-                    ->orWhere('status', 'like', "%{$search}%")
-                    ->orWhere('payment_status', 'like', "%{$search}%");
+                $query->where(function ($query) use ($search) {
+                    $query->whereRaw("CONCAT(first_name, ' ', last_name) LIKE ?", ["%{$search}%"])
+                        ->orWhereHas('role', function ($query) use ($search) {
+                            $query->where('name', 'like', "%{$search}%");
+                        });
+                });
             })
             ->paginate(8);
 
-        return Inertia::render('Admin/Invoices', [
-            'invoicesData' => response()->json($invoices),
+        return Inertia::render('Admin/Users', [
+            'usersData' => response()->json($users),
             'searchTerm' => $search,
         ]);
     }
@@ -52,7 +52,7 @@ class InvoiceController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Invoice $invoice)
+    public function show(User $user)
     {
         //
     }
@@ -60,7 +60,7 @@ class InvoiceController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Invoice $invoice)
+    public function edit(User $user)
     {
         //
     }
@@ -68,7 +68,7 @@ class InvoiceController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Invoice $invoice)
+    public function update(Request $request, User $user)
     {
         //
     }
@@ -76,7 +76,7 @@ class InvoiceController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Invoice $invoice)
+    public function destroy(User $user)
     {
         //
     }
