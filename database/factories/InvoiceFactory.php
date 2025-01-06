@@ -23,7 +23,6 @@ class InvoiceFactory extends Factory
             'payment_status' => $this->faker->randomElement(['pending', 'completed', 'failed']),
             'notes' => $this->faker->text(200),
             'due_date' => $this->faker->optional()->date(),
-            'is_active' => $this->faker->boolean,
             'payment_method' => $this->faker->randomElement(['Credit Card', 'Bank Transfer', 'Cash']),
             'tax' => $this->faker->optional()->randomFloat(2, 0, 20), // Tax rate between 0 and 20
             'customer_id' => Customer::factory(), 

@@ -32,11 +32,11 @@ class User extends Authenticatable
 
     public function role()
     {
-        return $this->belongsTo(Role::class, 'role_id', 'role_id');
+        return $this->belongsTo(Role::class, 'role_id', 'id');
     }
 
     public function logs()
     {
-        return $this->hasMany(Log::class, 'log_id', 'log_id');
+        return $this->hasMany(Log::class, 'user_id', 'id');
     }
 }

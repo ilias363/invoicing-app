@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Customer extends Model
 {
     use HasFactory;
+
     public $timestamps = false;
 
     protected $fillable = [
@@ -20,7 +21,6 @@ class Customer extends Model
 
     public function invoices()
     {
-        return $this->hasMany(Invoice::class, 'invoice_id', 'invoice_id');
+        return $this->hasMany(Invoice::class, 'customer_id', 'id');
     }
-
 }
