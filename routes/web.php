@@ -20,6 +20,10 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/admin/create-invoice', function () {
         return Inertia::render('Admin/CreateInvoice');
     })->name('admin.create-invoice');
+
+    Route::get('/admin/create-invoice/preview', function () {
+        return Inertia::render('Admin/InvoicePreview');
+    })->name('admin.preview');
 });
 
 Route::middleware(['auth', 'role:salesman'])->group(function () {
