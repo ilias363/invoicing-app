@@ -25,6 +25,7 @@ class CompanyFactory extends Factory
             'email' => $this->faker->unique()->safeEmail,
             'phone' => $this->faker->phoneNumber,
             'tax_id' => $this->faker->numerify('TAX###'),
+            'tax_rate' => 20,
             'logo' => $this->faker->imageUrl(200, 200, 'business', true, 'logo'),
         ];
     }

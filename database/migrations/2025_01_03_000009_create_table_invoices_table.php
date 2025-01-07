@@ -17,7 +17,7 @@ return new class extends Migration {
             $table->enum('payment_method', ['Credit Card', 'Bank Transfer', 'Cash'])->nullable();
             $table->double('tax')->nullable();
             $table->foreignId('customer_id')->constrained('customers')->onDelete('cascade');
-            $table->foreignId('doc_style_id')->constrained('doc_styles')->onDelete('cascade');
+            $table->foreignId('doc_style_id')->nullable()->constrained('doc_styles')->onDelete('cascade');
         });
     }
 

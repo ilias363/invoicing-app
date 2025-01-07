@@ -2,8 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Company;
+use App\Models\Customer;
 use App\Models\Invoice;
+use App\Models\Product;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 
 class InvoiceController extends Controller
@@ -11,7 +16,7 @@ class InvoiceController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function searchInvoices(Request $request)
+    public function index(Request $request)
     {
         $search = $request->get('search', '');
 
@@ -20,24 +25,19 @@ class InvoiceController extends Controller
             ->when($search, function ($query, $search) {
                 $query->whereHas('customer', function ($query) use ($search) {
                     $query->where('first_name', 'like', "%{$search}%")
-                    ->orWhere('last_name', 'like', "%{$search}%");
+                        ->orWhere('last_name', 'like', "%{$search}%");
                 })
                     ->orWhere('status', 'like', "%{$search}%")
                     ->orWhere('payment_status', 'like', "%{$search}%");
             })
             ->paginate(8);
 
+        $user = Auth::user();
+
         return Inertia::render('Admin/Invoices', [
             'invoicesData' => response()->json($invoices),
             'searchTerm' => $search,
-        ]);
-    }
-
-    public function index()
-    {
-        $invoicesData = Invoice::all();
-        return Inertia::render('Admin/Home', [
-            'invoicesData' => response()->json($invoicesData)
+            'user' => $user,
         ]);
     }
 
@@ -46,7 +46,17 @@ class InvoiceController extends Controller
      */
     public function create()
     {
-        //
+        $user = Auth::user();
+        $customers = Customer::all();
+        $products = Product::all();
+        $taxRate = Company::first()->tax_rate;
+
+        return Inertia::render('Admin/CreateInvoice', [
+            'customers' => $customers,
+            'products' => $products,
+            'taxRate' => $taxRate,
+            'user' => $user,
+        ]);
     }
 
     /**
@@ -54,7 +64,80 @@ class InvoiceController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validatedData = $request->validate([
+            'customer_id' => 'required|exists:customers,id',
+            'invoice_date' => 'required|date',
+            'due_date' => 'nullable|date|after_or_equal:invoice_date',
+            'payment_method' => 'required|in:Credit Card,Bank Transfer,Cash',
+            'notes' => 'nullable|string|max:500',
+            'products' => 'required|array|min:1',
+            'products.*.id' => 'required|exists:products,id',
+            'products.*.quantity' => 'required|integer|min:1',
+        ], [
+            'customer_id.required' => 'Customer selection is required.',
+            'customer_id.exists' => 'The selected customer does not exist.',
+            'invoice_date.required' => 'The invoice date is required.',
+            'invoice_date.date' => 'The invoice date must be a valid date.',
+            'due_date.date' => 'The due date must be a valid date.',
+            'due_date.after_or_equal' => 'The due date cannot be earlier than the invoice date.',
+            'payment_method.required' => 'A payment method is required.',
+            'payment_method.in' => 'The selected payment method is invalid.',
+            'notes.string' => 'Notes must be a valid string.',
+            'products.required' => 'At least one product is required.',
+            'products.min' => 'You must add at least one product.',
+            'products.*.product_id.required' => 'Each product must have a valid ID.',
+            'products.*.product_id.exists' => 'One or more selected products do not exist.',
+            'products.*.quantity.required' => 'The quantity for each product is required.',
+            'products.*.quantity.integer' => 'The quantity must be a valid integer.',
+            'products.*.quantity.min' => 'The quantity must be at least 1.',
+        ]);
+
+        DB::beginTransaction();
+
+        try {
+            $invoice = Invoice::create([
+                'customer_id' => $validatedData['customer_id'],
+                'invoice_date' => $validatedData['invoice_date'],
+                'due_date' => $validatedData['due_date'],
+                'payment_method' => $validatedData['payment_method'],
+                'notes' => $validatedData['notes'],
+                'total_amount' => 0,
+                'status' => 'pending',
+                'payment_status' => 'pending',
+            ]);
+
+            $totalAmount = 0;
+
+            foreach ($validatedData['products'] as $product) {
+                $productModel = Product::find($product['id']);
+                $totalAmount += $productModel->price * (1 - $productModel->discount / 100) * $product['quantity'];
+
+                DB::table('invoice_product')->insert([
+                    'invoice_id' => $invoice->id,
+                    'product_id' => $product['id'],
+                    'quantity' => $product['quantity'],
+                ]);
+            }
+
+            $invoice->update([
+                'total_amount' => $totalAmount * 1 + Company::first()->tax_rate,
+            ]);
+
+            DB::commit();
+
+            return redirect()->route("admin.invoices");
+            // return response()->json([
+            //     'message' => 'Invoice created successfully!',
+            //     'invoice' => $invoice,
+            // ]);
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            return response()->json([
+                'message' => 'Failed to create the invoice.',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
     }
 
     /**

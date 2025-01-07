@@ -17,6 +17,7 @@ class Company extends Model
         'email',
         'phone',
         'tax_id',
+        'tax_rate',
         'logo',
     ];
 
