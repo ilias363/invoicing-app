@@ -110,7 +110,7 @@ class InvoiceController extends Controller
 
             foreach ($validatedData['products'] as $product) {
                 $productModel = Product::find($product['id']);
-                $totalAmount += $productModel->price * (1 - $productModel->discount / 100) * $product['quantity'];
+                $totalAmount += $productModel->price * (1 - ($productModel->discount / 100)) * $product['quantity'];
 
                 DB::table('invoice_product')->insert([
                     'invoice_id' => $invoice->id,
@@ -120,7 +120,7 @@ class InvoiceController extends Controller
             }
 
             $invoice->update([
-                'total_amount' => $totalAmount * 1 + Company::first()->tax_rate,
+                'total_amount' => $totalAmount * (1 + Company::first()->tax_rate / 100),
             ]);
 
             DB::commit();

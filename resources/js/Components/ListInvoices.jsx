@@ -36,7 +36,7 @@ const ListInvoices = ({ invoices, pages, searchTerm }) => {
                                 {invoice.customer.first_name}
                             </td>
                             <td className="border px-6 py-4 text-gray-800">
-                                {invoice.total_amount} MAD
+                                {invoice.total_amount.toFixed(2)} MAD
                             </td>
                             <td className="border px-6 py-4 text-gray-800">
                                 <span

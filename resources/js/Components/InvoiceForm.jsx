@@ -104,7 +104,7 @@ const InvoiceForm = ({ customersData, productsData, taxRate }) => {
             0
         );
 
-        const tax = untaxedAmount * taxRate;
+        const tax = untaxedAmount * taxRate / 100;
         const totalAmount = untaxedAmount + tax;
 
         return {
