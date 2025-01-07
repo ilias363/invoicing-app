@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
 class UserController extends Controller
@@ -14,7 +15,7 @@ class UserController extends Controller
     public function index(Request $request)
     {
         $search = $request->get('search', '');
-
+        $user = Auth::user();
         $users = User::query()
             ->with('role')
             ->when($search, function ($query, $search) {
@@ -30,6 +31,7 @@ class UserController extends Controller
         return Inertia::render('Admin/Users', [
             'usersData' => response()->json($users),
             'searchTerm' => $search,
+            'user' => $user,
         ]);
     }
 

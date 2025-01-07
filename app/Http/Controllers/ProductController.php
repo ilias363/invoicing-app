@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Product;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
 class ProductController extends Controller
@@ -14,7 +15,7 @@ class ProductController extends Controller
     public function index(Request $request)
     {
         $search = $request->get('search', '');
-
+        $user = Auth::user();
         $products = Product::query()
             ->when($search, function ($query, $search) {
                 $query->where('name', 'like', "%{$search}%")
@@ -25,6 +26,7 @@ class ProductController extends Controller
         return Inertia::render('Admin/Products', [
             'productsData' => response()->json($products),
             'searchTerm' => $search,
+            'user' => $user,
         ]);
     }
 

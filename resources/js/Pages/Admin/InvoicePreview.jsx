@@ -2,7 +2,7 @@ import React from 'react';
 import Header from '@/Components/Header';
 import Preview from '@/Components/Preview';
 
-const InvoicePreview = () => {
+const InvoicePreview = ({user}) => {
   const invoiceData = {
     invoiceNumber: "INV-001",
     invoiceDate: "2025-01-06",
@@ -38,7 +38,7 @@ const InvoicePreview = () => {
 
   return (
     <div className="min-h-screen flex flex-col items-center bg-gradient-to-r bg-[#DCDCDC]">
-      <Header />
+      <Header isAdmin={true} user={user}/>
       <div className="flex flex-row items-center justify-center w-full">
         <Preview invoiceData={invoiceData} docStyle={docStyle} />
       </div>

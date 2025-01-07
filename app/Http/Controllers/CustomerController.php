@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Customer;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
 class CustomerController extends Controller
@@ -14,7 +15,7 @@ class CustomerController extends Controller
     public function index(Request $request)
     {
         $search = $request->get('search', '');
-
+        $user = Auth::user();
         $customers = Customer::query()
             ->when($search, function ($query, $search) {
                 $query->whereRaw("CONCAT(first_name, ' ', last_name) LIKE ?", ["%{$search}%"]);
@@ -24,6 +25,7 @@ class CustomerController extends Controller
         return Inertia::render('Admin/Customers', [
             'customersData' => response()->json($customers),
             'searchTerm' => $search,
+            'user' => $user,
         ]);
     }
 

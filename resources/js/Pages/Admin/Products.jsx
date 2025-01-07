@@ -3,14 +3,14 @@ import ListProducts from "@/Components/ListProducts";
 import SubHeader from "@/Components/SubHeader";
 import { router } from "@inertiajs/react";
 
-const Products = ({ productsData, searchTerm }) => {
+const Products = ({ productsData, searchTerm, user }) => {
     const handleSearchSubmit = (search) => {
         router.get(route("admin.products"), { search });
     };
 
     return (
         <>
-            <Header />
+            <Header isAdmin={true} user={user}/>
             <SubHeader
                 title={"Product"}
                 placeholder={"Search by Name, Category"}
