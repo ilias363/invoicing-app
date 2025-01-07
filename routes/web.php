@@ -2,10 +2,12 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\LogController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\UserController;
+use App\Models\Invoice;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -22,9 +24,9 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
         return Inertia::render('Admin/CreateInvoice');
     })->name('admin.create-invoice');
 
-    Route::get('/admin/dashboard', [LogController::class, 'index'])->name('admin.home');
+    Route::get('/admin/dashboard', [DashboardController::class, 'index'])->name('admin.home');
 
-    Route::get('/admin/invoices', [InvoiceController::class, 'index'])->name('admin.invoices');
+    Route::get('/admin/invoices', [InvoiceController::class, 'searchInvoices'])->name('admin.invoices');
     Route::get('/admin/products', [ProductController::class, 'index'])->name('admin.products');
     Route::get('/admin/customers', [CustomerController::class, 'index'])->name('admin.customers');
     Route::get('/admin/users', [UserController::class, 'index'])->name('admin.users');

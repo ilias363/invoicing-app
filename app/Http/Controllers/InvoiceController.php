@@ -11,7 +11,7 @@ class InvoiceController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request)
+    public function searchInvoices(Request $request)
     {
         $search = $request->get('search', '');
 
@@ -30,6 +30,14 @@ class InvoiceController extends Controller
         return Inertia::render('Admin/Invoices', [
             'invoicesData' => response()->json($invoices),
             'searchTerm' => $search,
+        ]);
+    }
+
+    public function index()
+    {
+        $invoicesData = Invoice::all();
+        return Inertia::render('Admin/Home', [
+            'invoicesData' => response()->json($invoicesData)
         ]);
     }
 
