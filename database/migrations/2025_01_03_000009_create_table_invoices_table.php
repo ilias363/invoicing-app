@@ -9,8 +9,8 @@ return new class extends Migration {
             $table->id();
             $table->date('invoice_date');
             $table->double('total_amount');
-            $table->enum('status', ['draft', 'issued', 'paid', 'cancelled'])->nullable();
-            $table->enum('payment_status', ['pending', 'completed', 'failed'])->nullable();
+            $table->enum('status', ['pending', 'approved', 'denied'])->nullable();
+            $table->enum('payment_status', ['pending', 'paid', 'cancelled'])->nullable();
             $table->text('notes')->nullable();
             $table->date('due_date')->nullable();
             $table->softDeletes();

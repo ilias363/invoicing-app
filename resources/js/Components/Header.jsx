@@ -1,6 +1,6 @@
 import ProfileCard from "./ProfilCard";
 
-function Header() {
+function Header({isAdmin,user}) {
     const logoSrc = "/logonobgwhite.png";
 
     return (
@@ -38,18 +38,20 @@ function Header() {
                         >
                             Customers
                         </a>
-                        <a
-                            href="/admin/users"
-                            className="hover:text-[#ACACAC] text-white tracking-widest cursor-pointer"
-                        >
-                            Users Managment
-                        </a>
+                        {isAdmin && (
+                            <a
+                                href="/admin/users"
+                                className="hover:text-[#ACACAC] text-white tracking-widest cursor-pointer"
+                            >
+                                Users Management
+                            </a>
+                        )}
                     </ul>
                 </div>
 
                 {/* Login Card */}
                 <div className="flex justify-center">
-                    <ProfileCard />
+                    <ProfileCard user={user} />
                 </div>
             </nav>
         </header>

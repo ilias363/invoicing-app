@@ -6,11 +6,11 @@ ChartJS.register(BarElement, CategoryScale, LinearScale, Tooltip, Legend);
 
 const Histogram = ({ data }) => {
     const chartData = {
-        labels: data.months,
+        labels: data.Last4months,
         datasets: [
             {
-                label: "Validated",
-                data: data.validated,
+                label: "Paid",
+                data: data.paid,
                 backgroundColor: "#4CAF50",
                 maxBarThickness: 50,
             },
