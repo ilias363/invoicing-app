@@ -8,7 +8,7 @@ const UserForm = () => {
     email: "",
     phone: "",
     password: "",
-    confirm_password: "",
+    password_confirmation: "",
     account_status: "active",
     role_id: "",
   });
@@ -20,12 +20,6 @@ const UserForm = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-
-    // Add frontend password confirmation check
-    if (data.password !== data.confirm_password) {
-      alert("Passwords do not match. Please check and try again.");
-      return;
-    }
 
     post("/admin/create-user");
   };
@@ -92,34 +86,36 @@ const UserForm = () => {
       </div>
       <div className="mb-4 space-y-4">
         <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-          Password
+            Password
         </label>
         <input
-          type="password"
-          name="password"
-          id="password"
-          value={data.password}
-          onChange={handleChange}
-          className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
-          required
+            type="password"
+            name="password"
+            id="password"
+            value={data.password}
+            onChange={handleChange}
+            className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+            required
         />
         {errors.password && <p className="text-red-500 text-sm">{errors.password}</p>}
+
         <label htmlFor="confirm_password" className="block text-sm font-medium text-gray-700">
-          Confirm Password
+            Confirm Password
         </label>
         <input
-          type="password"
-          name="confirm_password"
-          id="confirm_password"
-          value={data.confirm_password}
-          onChange={handleChange}
-          className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
-          required
+            type="password"
+            name="password_confirmation"
+            id="password_confirmation"
+            value={data.password_confirmation}
+            onChange={handleChange}
+            className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+            required
         />
         {errors.confirm_password && (
-          <p className="text-red-500 text-sm">{errors.confirm_password}</p>
+            <p className="text-red-500 text-sm">{errors.confirm_password}</p>
         )}
       </div>
+
       <div className="mb-4 space-y-4">
         <label htmlFor="account_status" className="block text-sm font-medium text-gray-700">
           Account Status

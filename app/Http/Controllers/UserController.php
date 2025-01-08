@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
+use Illuminate\Validation\Rules\Password;
 
 class UserController extends Controller
 {
@@ -58,7 +59,8 @@ class UserController extends Controller
             'last_name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
             'phone' => 'nullable|string|max:20',
-            'password' => 'required|string|min:5',
+            'password' => 'required|string|min:5|confirmed',
+            'password_confirmation' => 'required|string',
             'account_status' => 'required|in:active,inactive',
             'role_id' => 'required|exists:roles,id',
         ], [
@@ -68,6 +70,7 @@ class UserController extends Controller
             'email.email' => 'The email must be a valid email address.',
             'email.unique' => 'The email is already taken.',
             'password.required' => 'Password is required.',
+            'password_confirmation.required' => 'Password confirmation is required.',
             'account_status.required' => 'Account status is required.',
             'account_status.in' => 'Invalid account status.',
             'role_id.required' => 'Role is required.',

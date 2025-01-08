@@ -3,7 +3,7 @@ import ListUsers from "@/Components/ListUsers";
 import SubHeader from "@/Components/SubHeader";
 import { router } from "@inertiajs/react";
 
-const Users = ({ usersData, searchTerm,user }) => {
+const Users = ({ usersData, searchTerm, user }) => {
     const handleSearchSubmit = (search) => {
         router.get(route("admin.users"), { search });
     };

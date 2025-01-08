@@ -9,7 +9,7 @@ function ProfileCard({user}) {
         post('/logout');
     };
     return (
-        <div className="flex items-center justify-between bg-[#2A2A2A] text-white px-4 py-2 w-64">
+        <div className="flex items-center justify-end space-x-5 bg-[#2A2A2A] text-white px-4 py-2 w-64">
             <div className='flex flex-col items-end'>
                 <h1 className="text-lg font-bold">{user.first_name}</h1>
                 <h1 className="text-lg font-bold">{user.last_name}</h1>
