@@ -1,8 +1,35 @@
 import React, { useState } from "react";
 import { FaEllipsisH } from "react-icons/fa";
 
-const ListUsers = ({ users, pages, searchTerm }) => {
+const ListUsers = ({
+    users,
+    pages,
+    searchTerm,
+    onSortChange,
+    sortBy,
+    sortDirection,
+}) => {
     const [openUserId, setOpenUserId] = useState(null);
+
+    const makeUrlWithParams = (url) => {
+        if (searchTerm !== null) url += "&search=" + searchTerm;
+        if (sortBy !== null) url += "&sortBy=" + sortBy;
+        if (sortDirection !== null) url += "&sortDirection=" + sortDirection;
+
+        return url;
+    };
+
+    const handleSortChange = (newSortBy) => {
+        let newSortDirection = sortDirection;
+
+        if (newSortBy === sortBy) {
+            newSortDirection = sortDirection === "asc" ? "desc" : "asc";
+        } else {
+            newSortDirection = "desc";
+        }
+
+        onSortChange(newSortBy, newSortDirection);
+    };
 
     const toggleActionsMenu = (userId) => {
         setOpenUserId(openUserId === userId ? null : userId);
@@ -13,11 +40,46 @@ const ListUsers = ({ users, pages, searchTerm }) => {
             <table className="w-full text-center border-collapse border-2 border-gray-200">
                 <thead className="bg-gray-300 whitespace-nowrap">
                     <tr className="text-lg font-semibold text-gray-600">
-                        <th className="border px-6 py-3">User ID</th>
-                        <th className="border px-6 py-3">Name</th>
-                        <th className="border px-6 py-3">E-mail</th>
-                        <th className="border px-6 py-3">Phone Number</th>
-                        <th className="border px-6 py-3">Role</th>
+                        <th
+                            className="border px-6 py-3 cursor-pointer"
+                            onClick={() => handleSortChange("id")}
+                        >
+                            User ID{" "}
+                            {sortBy === "id" &&
+                                (sortDirection === "asc" ? "↑" : "↓")}
+                        </th>
+                        <th
+                            className="border px-6 py-3 cursor-pointer"
+                            onClick={() => handleSortChange("user_name")}
+                        >
+                            Name{" "}
+                            {sortBy === "user_name" &&
+                                (sortDirection === "asc" ? "↑" : "↓")}
+                        </th>
+                        <th
+                            className="border px-6 py-3 cursor-pointer"
+                            onClick={() => handleSortChange("email")}
+                        >
+                            E-mail{" "}
+                            {sortBy === "email" &&
+                                (sortDirection === "asc" ? "↑" : "↓")}
+                        </th>
+                        <th
+                            className="border px-6 py-3 cursor-pointer"
+                            onClick={() => handleSortChange("phone")}
+                        >
+                            Phone Number{" "}
+                            {sortBy === "phone" &&
+                                (sortDirection === "asc" ? "↑" : "↓")}
+                        </th>
+                        <th
+                            className="border px-6 py-3 cursor-pointer"
+                            onClick={() => handleSortChange("role_name")}
+                        >
+                            Role{" "}
+                            {sortBy === "role_name" &&
+                                (sortDirection === "asc" ? "↑" : "↓")}
+                        </th>
                         <th className="border px-6 py-3">Actions</th>
                     </tr>
                 </thead>
@@ -31,7 +93,7 @@ const ListUsers = ({ users, pages, searchTerm }) => {
                                 {user.id}
                             </td>
                             <td className="border px-6 py-4 text-gray-800">
-                                {user.first_name} {user.last_name}
+                                {user.last_name} {user.first_name}
                             </td>
                             <td className="border px-6 py-4 text-gray-800">
                                 {user.email}
@@ -44,9 +106,7 @@ const ListUsers = ({ users, pages, searchTerm }) => {
                             </td>
                             <td className="border px-6 py-4 text-center">
                                 <button
-                                    onClick={() =>
-                                        toggleActionsMenu(user.id)
-                                    }
+                                    onClick={() => toggleActionsMenu(user.id)}
                                     className="p-2 text-gray-600 hover:text-gray-800 focus:outline-none"
                                 >
                                     <FaEllipsisH size={25} />
@@ -96,9 +156,7 @@ const ListUsers = ({ users, pages, searchTerm }) => {
                         href={
                             link.url === null
                                 ? "#"
-                                : searchTerm
-                                ? link.url + "&search=" + searchTerm
-                                : link.url
+                                : makeUrlWithParams(link.url)
                         }
                         disabled={link.url === null}
                         className={`flex items-center justify-center px-5 py-2 text-md font-medium rounded-lg transition duration-300 ease-in-out hover:bg-blue-300 hover:text-black 

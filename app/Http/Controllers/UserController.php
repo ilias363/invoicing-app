@@ -17,22 +17,37 @@ class UserController extends Controller
     public function index(Request $request)
     {
         $search = $request->get('search', '');
-        $user = Auth::user();
+        $sortBy = $request->get('sortBy', 'user_name');
+        $sortDirection = $request->get('sortDirection', 'asc');
+
         $users = User::query()
             ->with('role')
+            ->select('users.*')
+            ->leftJoin('roles', 'users.role_id', '=', 'roles.id')
             ->when($search, function ($query, $search) {
                 $query->where(function ($query) use ($search) {
-                    $query->whereRaw("CONCAT(first_name, ' ', last_name) LIKE ?", ["%{$search}%"])
-                        ->orWhereHas('role', function ($query) use ($search) {
-                            $query->where('name', 'like', "%{$search}%");
-                        });
+                    $query->whereRaw("CONCAT(users.last_name, ' ', users.first_name) LIKE ?", ["%{$search}%"])
+                        ->orWhere('roles.name', 'like', "%{$search}%");
                 });
             })
+            ->when($sortBy === 'user_name', function ($query) use ($sortDirection) {
+                $query->orderByRaw('CONCAT(users.last_name, " ", users.first_name) ' . $sortDirection);
+            })
+            ->when($sortBy === 'role_name', function ($query) use ($sortDirection) {
+                $query->orderBy('roles.name', $sortDirection);
+            })
+            ->when(!in_array($sortBy, ['user_name', 'role_name']), function ($query) use ($sortBy, $sortDirection) {
+                $query->orderBy('users.' . $sortBy, $sortDirection);
+            })
             ->paginate(8);
+
+        $user = Auth::user();
 
         return Inertia::render('Admin/Users', [
             'usersData' => response()->json($users),
             'searchTerm' => $search,
+            'sortBy' => $sortBy,
+            'sortDirection' => $sortDirection,
             'user' => $user,
         ]);
     }
@@ -76,9 +91,9 @@ class UserController extends Controller
             'role_id.required' => 'Role is required.',
             'role_id.exists' => 'The selected role does not exist.',
         ]);
-    
+
         DB::beginTransaction();
-    
+
         try {
             // Create the user
             $user = User::create([
@@ -90,23 +105,23 @@ class UserController extends Controller
                 'account_status' => $validatedData['account_status'],
                 'role_id' => $validatedData['role_id'],
             ]);
-    
+
             // Commit the transaction
             DB::commit();
-    
+
             // Redirect to the users list page with a success message
             return redirect()->route('admin.users')->with('success', 'User created successfully!');
         } catch (\Exception $e) {
             // Rollback the transaction if something goes wrong
             DB::rollBack();
-    
+
             // Handle the error and return an error response
             return redirect()->back()->withErrors(['error' => 'Failed to create the user. Please try again later.']);
         }
     }
-    
-    
-    
+
+
+
 
     /**
      * Display the specified resource.

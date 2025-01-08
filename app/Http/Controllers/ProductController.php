@@ -15,17 +15,24 @@ class ProductController extends Controller
     public function index(Request $request)
     {
         $search = $request->get('search', '');
-        $user = Auth::user();
+        $sortBy = $request->get('sortBy', 'name');
+        $sortDirection = $request->get('sortDirection', 'asc');
+
         $products = Product::query()
             ->when($search, function ($query, $search) {
                 $query->where('name', 'like', "%{$search}%")
                     ->orWhere('category', 'like', "%{$search}%");
             })
+            ->orderBy($sortBy, $sortDirection)
             ->paginate(6);
+
+        $user = Auth::user();
 
         return Inertia::render('Admin/Products', [
             'productsData' => response()->json($products),
             'searchTerm' => $search,
+            'sortBy' => $sortBy,
+            'sortDirection' => $sortDirection,
             'user' => $user,
         ]);
     }

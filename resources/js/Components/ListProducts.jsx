@@ -1,8 +1,35 @@
 import React, { useState } from "react";
 import { FaEllipsisH } from "react-icons/fa";
 
-const ListProducts = ({ products, pages, searchTerm }) => {
+const ListProducts = ({
+    products,
+    pages,
+    searchTerm,
+    onSortChange,
+    sortBy,
+    sortDirection,
+}) => {
     const [openProductId, setOpenProductId] = useState(null);
+
+    const makeUrlWithParams = (url) => {
+        if (searchTerm !== null) url += "&search=" + searchTerm;
+        if (sortBy !== null) url += "&sortBy=" + sortBy;
+        if (sortDirection !== null) url += "&sortDirection=" + sortDirection;
+
+        return url;
+    };
+
+    const handleSortChange = (newSortBy) => {
+        let newSortDirection = sortDirection;
+
+        if (newSortBy === sortBy) {
+            newSortDirection = sortDirection === "asc" ? "desc" : "asc";
+        } else {
+            newSortDirection = "desc";
+        }
+
+        onSortChange(newSortBy, newSortDirection);
+    };
 
     const toggleActionsMenu = (productId) => {
         setOpenProductId(openProductId === productId ? null : productId);
@@ -13,13 +40,55 @@ const ListProducts = ({ products, pages, searchTerm }) => {
             <table className="w-full text-center border-collapse border-2 border-gray-200">
                 <thead className="bg-gray-300 whitespace-nowrap">
                     <tr className="text-lg font-semibold text-gray-600">
-                        <th className="border px-6 py-3">Product ID</th>
-                        <th className="border px-6 py-3">Product Name</th>
-                        <th className="border px-6 py-3">Category</th>
+                        <th
+                            className="border px-6 py-3 cursor-pointer"
+                            onClick={() => handleSortChange("id")}
+                        >
+                            Product ID
+                            {sortBy === "id" &&
+                                (sortDirection === "asc" ? "↑" : "↓")}
+                        </th>
+                        <th
+                            className="border px-6 py-3 cursor-pointer"
+                            onClick={() => handleSortChange("name")}
+                        >
+                            Product Name
+                            {sortBy === "name" &&
+                                (sortDirection === "asc" ? "↑" : "↓")}
+                        </th>
+                        <th
+                            className="border px-6 py-3 cursor-pointer"
+                            onClick={() => handleSortChange("category")}
+                        >
+                            Category
+                            {sortBy === "category" &&
+                                (sortDirection === "asc" ? "↑" : "↓")}
+                        </th>
                         <th className="border px-6 py-3">Description</th>
-                        <th className="border px-6 py-3">Price</th>
-                        <th className="border px-6 py-3">Discount %</th>
-                        <th className="border px-6 py-3">Stock Qty</th>
+                        <th
+                            className="border px-6 py-3 cursor-pointer"
+                            onClick={() => handleSortChange("price")}
+                        >
+                            Price
+                            {sortBy === "price" &&
+                                (sortDirection === "asc" ? "↑" : "↓")}
+                        </th>
+                        <th
+                            className="border px-6 py-3 cursor-pointer"
+                            onClick={() => handleSortChange("discount")}
+                        >
+                            Discount %
+                            {sortBy === "discount" &&
+                                (sortDirection === "asc" ? "↑" : "↓")}
+                        </th>
+                        <th
+                            className="border px-6 py-3 cursor-pointer"
+                            onClick={() => handleSortChange("stock_quantity")}
+                        >
+                            Stock Qty
+                            {sortBy === "stock_quantity" &&
+                                (sortDirection === "asc" ? "↑" : "↓")}
+                        </th>
                         <th className="border px-6 py-3">Actions</th>
                     </tr>
                 </thead>
@@ -104,9 +173,7 @@ const ListProducts = ({ products, pages, searchTerm }) => {
                         href={
                             link.url === null
                                 ? "#"
-                                : searchTerm
-                                ? link.url + "&search=" + searchTerm
-                                : link.url
+                                : makeUrlWithParams(link.url)
                         }
                         disabled={link.url === null}
                         className={`flex items-center justify-center px-5 py-2 text-md font-medium rounded-lg transition duration-300 ease-in-out hover:bg-blue-300 hover:text-black 

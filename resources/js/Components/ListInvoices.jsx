@@ -149,34 +149,32 @@ const ListInvoices = ({
 
                                 {openInvoiceId === invoice.id && (
                                     <div
-                                        className="absolute w-24 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5"
+                                        className="absolute w-24 py-1 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5"
                                         role="menu"
                                         aria-orientation="vertical"
                                         aria-labelledby="options-menu"
                                     >
-                                        <div className="py-1">
-                                            <a
-                                                href="#"
-                                                className="block px-3 py-1 text-sm text-gray-700 hover:bg-gray-100"
-                                                role="menuitem"
-                                            >
-                                                View
-                                            </a>
-                                            <a
-                                                href="#"
-                                                className="block px-3 py-1 text-sm text-gray-700 hover:bg-gray-100"
-                                                role="menuitem"
-                                            >
-                                                Edit
-                                            </a>
-                                            <a
-                                                href="#"
-                                                className="block px-3 py-1 text-sm text-gray-700 hover:bg-gray-100"
-                                                role="menuitem"
-                                            >
-                                                Delete
-                                            </a>
-                                        </div>
+                                        <a
+                                            href="#"
+                                            className="block px-3 py-1 text-sm text-gray-700 hover:bg-gray-100"
+                                            role="menuitem"
+                                        >
+                                            View
+                                        </a>
+                                        <a
+                                            href="#"
+                                            className="block px-3 py-1 text-sm text-gray-700 hover:bg-gray-100"
+                                            role="menuitem"
+                                        >
+                                            Edit
+                                        </a>
+                                        <a
+                                            href="#"
+                                            className="block px-3 py-1 text-sm text-gray-700 hover:bg-gray-100"
+                                            role="menuitem"
+                                        >
+                                            Delete
+                                        </a>
                                     </div>
                                 )}
                             </td>
