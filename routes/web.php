@@ -31,6 +31,11 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/admin/create-invoice/preview', function () {
         return Inertia::render('Admin/InvoicePreview');
     })->name('admin.preview');
+
+    Route::get('/admin/create-user', [UserController::class, 'create'])->name('admin.create-user');
+    Route::post('/admin/create-user', [UserController::class, 'store']);
+
+
     
 });
 

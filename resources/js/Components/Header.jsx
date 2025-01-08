@@ -50,7 +50,7 @@ function Header({isAdmin,user}) {
                 </div>
 
                 {/* Login Card */}
-                <div className="flex justify-center">
+                <div className="flex items-center">
                     <ProfileCard user={user} />
                 </div>
             </nav>
