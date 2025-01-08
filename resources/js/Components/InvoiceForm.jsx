@@ -104,7 +104,7 @@ const InvoiceForm = ({ customersData, productsData, taxRate }) => {
             0
         );
 
-        const tax = untaxedAmount * taxRate / 100;
+        const tax = (untaxedAmount * taxRate) / 100;
         const totalAmount = untaxedAmount + tax;
 
         return {
@@ -396,6 +396,9 @@ const InvoiceForm = ({ customersData, productsData, taxRate }) => {
             ></textarea>
             {errors.notes && (
                 <span className="text-sm text-red-600">{errors.notes}</span>
+            )}
+            {errors.creation && (
+                <span className="text-xl text-red-600">{errors.creation}</span>
             )}
 
             {/* Totals */}

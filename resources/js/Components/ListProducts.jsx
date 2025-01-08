@@ -11,7 +11,7 @@ const ListProducts = ({ products, pages, searchTerm }) => {
     return (
         <div className="bg-white shadow-lg rounded-xl py-6 px-10 mb-8">
             <table className="w-full text-center border-collapse border-2 border-gray-200">
-                <thead className="bg-gray-300">
+                <thead className="bg-gray-300 whitespace-nowrap">
                     <tr className="text-lg font-semibold text-gray-600">
                         <th className="border px-6 py-3">Product ID</th>
                         <th className="border px-6 py-3">Product Name</th>

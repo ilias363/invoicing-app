@@ -1,8 +1,35 @@
 import React, { useState } from "react";
 import { FaEllipsisH } from "react-icons/fa";
 
-const ListInvoices = ({ invoices, pages, searchTerm }) => {
+const ListInvoices = ({
+    invoices,
+    pages,
+    searchTerm,
+    onSortChange,
+    sortBy,
+    sortDirection,
+}) => {
     const [openInvoiceId, setOpenInvoiceId] = useState(null);
+
+    const makeUrlWithParams = (url) => {
+        if (searchTerm !== null) url += "&search=" + searchTerm;
+        if (sortBy !== null) url += "&sortBy=" + sortBy;
+        if (sortDirection !== null) url += "&sortDirection=" + sortDirection;
+
+        return url;
+    };
+
+    const handleSortChange = (newSortBy) => {
+        let newSortDirection = sortDirection;
+
+        if (newSortBy === sortBy) {
+            newSortDirection = sortDirection === "asc" ? "desc" : "asc";
+        } else {
+            newSortDirection = "desc";
+        }
+
+        onSortChange(newSortBy, newSortDirection);
+    };
 
     const toggleActionsMenu = (invoiceId) => {
         setOpenInvoiceId(openInvoiceId === invoiceId ? null : invoiceId);
@@ -11,14 +38,56 @@ const ListInvoices = ({ invoices, pages, searchTerm }) => {
     return (
         <div className="bg-white shadow-lg rounded-xl py-6 px-10 mb-8">
             <table className="w-full text-center border-collapse border-2 border-gray-200">
-                <thead className="bg-gray-300">
+                <thead className="bg-gray-300 whitespace-nowrap">
                     <tr className="text-lg font-semibold text-gray-600">
-                        <th className="border px-6 py-3">Invoice ID</th>
-                        <th className="border px-6 py-3">Customer</th>
-                        <th className="border px-6 py-3">Total Amount</th>
-                        <th className="border px-6 py-3">Status</th>
-                        <th className="border px-6 py-3">Payment Status</th>
-                        <th className="border px-6 py-3">Date Created</th>
+                        <th
+                            className="border px-6 py-3 cursor-pointer"
+                            onClick={() => handleSortChange("id")}
+                        >
+                            Invoice ID{" "}
+                            {sortBy === "id" &&
+                                (sortDirection === "asc" ? "↑" : "↓")}
+                        </th>
+                        <th
+                            className="border px-6 py-3 cursor-pointer"
+                            onClick={() => handleSortChange("customer_name")}
+                        >
+                            Customer{" "}
+                            {sortBy === "customer_name" &&
+                                (sortDirection === "asc" ? "↑" : "↓")}
+                        </th>
+                        <th
+                            className="border px-6 py-3 cursor-pointer"
+                            onClick={() => handleSortChange("total_amount")}
+                        >
+                            Total Amount{" "}
+                            {sortBy === "total_amount" &&
+                                (sortDirection === "asc" ? "↑" : "↓")}
+                        </th>
+                        <th
+                            className="border px-6 py-3 cursor-pointer"
+                            onClick={() => handleSortChange("status")}
+                        >
+                            Status{" "}
+                            {sortBy === "status" &&
+                                (sortDirection === "asc" ? "↑" : "↓")}
+                        </th>
+                        <th
+                            className="border px-6 py-3 cursor-pointer"
+                            onClick={() => handleSortChange("payment_status")}
+                        >
+                            Payment Status{" "}
+                            {sortBy === "payment_status" &&
+                                (sortDirection === "asc" ? "↑" : "↓")}
+                        </th>
+                        <th
+                            className="border px-6 py-3 cursor-pointer"
+                            onClick={() => handleSortChange("invoice_date")}
+                        >
+                            Date Created{" "}
+                            {sortBy === "invoice_date" &&
+                                (sortDirection === "asc" ? "↑" : "↓")}
+                        </th>
                         <th className="border px-6 py-3">Actions</th>
                     </tr>
                 </thead>
@@ -40,10 +109,12 @@ const ListInvoices = ({ invoices, pages, searchTerm }) => {
                             </td>
                             <td className="border px-6 py-4 text-gray-800">
                                 <span
-                                    className={`inline-block px-2 py-1 rounded-full text-xs font-semibold ${
-                                        invoice.status === "Paid"
+                                    className={`inline-block px-3 py-1 rounded-full font-semibold ${
+                                        invoice.status === "approved"
                                             ? "bg-green-100 text-green-600"
-                                            : "bg-yellow-100 text-yellow-600"
+                                            : invoice.status === "pending"
+                                            ? "bg-yellow-100 text-yellow-600"
+                                            : "bg-red-100 text-red-600"
                                     }`}
                                 >
                                     {invoice.status}
@@ -51,9 +122,12 @@ const ListInvoices = ({ invoices, pages, searchTerm }) => {
                             </td>
                             <td className="border px-6 py-4 text-gray-800">
                                 <span
-                                    className={`inline-block px-2 py-1 rounded-full text-xs font-semibold ${
-                                        invoice.payment_status === "Paid"
+                                    className={`inline-block px-3 py-1 rounded-full font-semibold ${
+                                        invoice.payment_status === "paid"
                                             ? "bg-green-100 text-green-600"
+                                            : invoice.payment_status ===
+                                              "pending"
+                                            ? "bg-yellow-100 text-yellow-600"
                                             : "bg-red-100 text-red-600"
                                     }`}
                                 >
@@ -117,9 +191,7 @@ const ListInvoices = ({ invoices, pages, searchTerm }) => {
                         href={
                             link.url === null
                                 ? "#"
-                                : searchTerm
-                                ? link.url + "&search=" + searchTerm
-                                : link.url
+                                : makeUrlWithParams(link.url)
                         }
                         disabled={link.url === null}
                         className={`flex items-center justify-center px-5 py-2 text-md font-medium rounded-lg transition duration-300 ease-in-out hover:bg-blue-300 hover:text-black 
