@@ -35,10 +35,10 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/admin/create-user', [UserController::class, 'create'])->name('admin.create-user');
     Route::post('/admin/create-user', [UserController::class, 'store']);
 
-    Route::post('/invoices/{id}/approve', [InvoiceController::class, 'approve'])->name('invoices.approve');
-    Route::post('/invoices/{id}/deny', [InvoiceController::class, 'deny'])->name('invoices.deny');
-    Route::get('/invoices/{id}/edit', [InvoiceController::class, 'edit'])->name('invoices.edit');
-    Route::delete('/invoices/{id}/delete', [InvoiceController::class, 'destroy'])->name('invoices.destroy');
+    Route::post('/admin/invoices/{id}/approve', [InvoiceController::class, 'approve'])->name('admin.invoices.approve');
+    Route::post('/admin/invoices/{id}/deny', [InvoiceController::class, 'deny'])->name('admin.invoices.deny');
+    Route::get('/admin/invoices/{id}/edit', [InvoiceController::class, 'edit'])->name('admin.invoices.edit');
+    Route::delete('/admin/invoices/{id}/delete', [InvoiceController::class, 'destroy'])->name('admin.invoices.destroy');
 
     Route::get('/admin/users/{id}/edit', [UserController::class, 'edit'])->name('admin.users.edit');
     Route::post('/admin/users/{id}/edit', [UserController::class, 'update']);

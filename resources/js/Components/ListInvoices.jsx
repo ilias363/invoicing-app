@@ -38,20 +38,20 @@ const ListInvoices = ({
     };
 
     const handleApprove = (id) => {
-        router.post(route("invoices.approve", id));
+        router.post(route("admin.invoices.approve", id));
     };
 
     const handleDeny = (id) => {
-        router.post(route("invoices.deny", id));
+        router.post(route("admin.invoices.deny", id));
     };
 
     const handleEdit = (id) => {
-        router.get(route("invoices.edit", id));
+        router.get(route("admin.invoices.edit", id));
     };
 
     const handleDelete = (id) => {
         if (confirm("Are you sure you want to delete this invoice?")) {
-            router.delete(route("invoices.destroy", id));
+            router.delete(route("admin.invoices.destroy", id));
         }
     };
 
