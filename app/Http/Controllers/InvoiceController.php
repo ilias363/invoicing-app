@@ -150,6 +150,34 @@ class InvoiceController extends Controller
         }
     }
 
+    public function approve($id)
+    {
+        $invoice = Invoice::find($id);
+
+        if ($invoice->status !== 'pending') {
+            return redirect()->back()->with('error', 'Only pending invoices can be approved.');
+        }
+
+        $invoice->status = 'approved';
+        $invoice->save();
+
+        return redirect()->back()->with('success', 'Invoice approved successfully.');
+    }
+
+    public function deny($id)
+    {
+        $invoice = Invoice::find($id);
+
+        if ($invoice->status !== 'pending') {
+            return redirect()->back()->with('error', 'Only pending invoices can be denied.');
+        }
+
+        $invoice->status = 'denied';
+        $invoice->save();
+
+        return redirect()->back()->with('success', 'Invoice denied successfully.');
+    }
+
     /**
      * Display the specified resource.
      */
@@ -161,9 +189,13 @@ class InvoiceController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Invoice $invoice)
+    public function edit($id)
     {
-        //
+        $invoice = Invoice::find($id);
+
+        return inertia('Admin/EditInvoice', [
+            'invoice' => $invoice
+        ]);
     }
 
     /**
@@ -177,8 +209,11 @@ class InvoiceController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Invoice $invoice)
+    public function destroy($id)
     {
-        //
+        $invoice = Invoice::find($id);
+        $invoice->delete();
+
+        return redirect()->back()->with('success', 'Invoice deleted successfully.');
     }
 }

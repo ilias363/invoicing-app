@@ -13,7 +13,7 @@ use Inertia\Inertia;
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);
 
-Route::middleware('auth')->group(function () {    
+Route::middleware('auth')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 });
 
@@ -24,7 +24,7 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/admin/products', [ProductController::class, 'index'])->name('admin.products');
     Route::get('/admin/customers', [CustomerController::class, 'index'])->name('admin.customers');
     Route::get('/admin/users', [UserController::class, 'index'])->name('admin.users');
-    
+
     Route::get('/admin/create-invoice', [InvoiceController::class, 'create'])->name('admin.create-invoice');
     Route::post('/admin/create-invoice', [InvoiceController::class, 'store']);
 
@@ -35,8 +35,10 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/admin/create-user', [UserController::class, 'create'])->name('admin.create-user');
     Route::post('/admin/create-user', [UserController::class, 'store']);
 
-
-    
+    Route::post('/invoices/{id}/approve', [InvoiceController::class, 'approve'])->name('invoices.approve');
+    Route::post('/invoices/{id}/deny', [InvoiceController::class, 'deny'])->name('invoices.deny');
+    Route::get('/invoices/{id}/edit', [InvoiceController::class, 'edit'])->name('invoices.edit');
+    Route::delete('/invoices/{id}/delete', [InvoiceController::class, 'destroy'])->name('invoices.destroy');
 });
 
 Route::middleware(['auth', 'role:salesman'])->group(function () {
