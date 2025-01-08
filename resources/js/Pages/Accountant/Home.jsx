@@ -1,11 +1,12 @@
-import React from 'react';
-import { useForm } from '@inertiajs/react';
+import React from "react";
+import { useForm, usePage } from "@inertiajs/react";
 
-const Home = ({ user }) => {
+const Home = () => {
+    const { auth } = usePage().props;
     const { post } = useForm();
 
     const handleLogout = () => {
-        post('/logout');
+        post("/logout");
     };
 
     return (
@@ -14,13 +15,14 @@ const Home = ({ user }) => {
                 <h1 className="text-4xl font-extrabold text-gray-800 mb-6">
                     Welcome to Home Accountant
                 </h1>
-                {user ? (
+                {auth?.user ? (
                     <>
                         <p className="text-lg text-gray-700 mb-4">
-                            Hello, {user.first_name + ' ' + user.last_name}! You are logged in.
+                            Hello, {auth.user.first_name + " " + auth.user.last_name}! You
+                            are logged in.
                         </p>
                         <p className="text-lg text-gray-600 mb-4">
-                            Email: {user.email}
+                            Email: {auth.user.email}
                         </p>
                     </>
                 ) : (

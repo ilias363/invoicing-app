@@ -26,14 +26,11 @@ class ProductController extends Controller
             ->orderBy($sortBy, $sortDirection)
             ->paginate(6);
 
-        $user = Auth::user();
-
         return Inertia::render('Admin/Products', [
             'productsData' => response()->json($products),
             'searchTerm' => $search,
             'sortBy' => $sortBy,
             'sortDirection' => $sortDirection,
-            'user' => $user,
         ]);
     }
 

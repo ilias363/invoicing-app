@@ -11,8 +11,6 @@ const ListInvoices = ({
     sortBy,
     sortDirection,
 }) => {
-    // import { usePage } from '@inertiajs/react';
-    // const { user } = usePage().props;
     const [openInvoiceId, setOpenInvoiceId] = useState(null);
 
     const makeUrlWithParams = (url) => {
@@ -190,7 +188,7 @@ const ListInvoices = ({
                                         <button
                                             onClick={() => {
                                                 setOpenInvoiceId(null);
-                                                handleApprove(invoice.id);
+                                                handleDelete(invoice.id);
                                             }}
                                             className="block w-full text-left px-3 py-1 text-sm text-gray-700 hover:bg-gray-100"
                                             role="menuitem"
@@ -202,7 +200,9 @@ const ListInvoices = ({
                                                 <button
                                                     onClick={() => {
                                                         setOpenInvoiceId(null);
-                                                        handleApprove(invoice.id);
+                                                        handleApprove(
+                                                            invoice.id
+                                                        );
                                                     }}
                                                     className="block w-full text-left px-3 py-1 text-sm text-gray-700 hover:bg-gray-100"
                                                     role="menuitem"

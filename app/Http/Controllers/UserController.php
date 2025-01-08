@@ -41,14 +41,11 @@ class UserController extends Controller
             })
             ->paginate(8);
 
-        $user = Auth::user();
-
         return Inertia::render('Admin/Users', [
             'usersData' => response()->json($users),
             'searchTerm' => $search,
             'sortBy' => $sortBy,
             'sortDirection' => $sortDirection,
-            'user' => $user,
         ]);
     }
 
@@ -57,10 +54,7 @@ class UserController extends Controller
      */
     public function create()
     {
-        $user = Auth::user();
-        return Inertia::render('Admin/CreateUser', [
-            'user' => $user,
-        ]);
+        return Inertia::render('Admin/CreateUser');
     }
 
     /**
@@ -131,11 +125,9 @@ class UserController extends Controller
      */
     public function edit($id)
     {
-        $user = Auth::user();
         $userToedit = User::find($id);
 
         return inertia('Admin/UpdateUser', [
-            'user' => $user,
             'userToedit' => $userToedit,
         ]);
     }

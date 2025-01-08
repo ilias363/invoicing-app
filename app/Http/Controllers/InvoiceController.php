@@ -41,14 +41,11 @@ class InvoiceController extends Controller
             })
             ->paginate(8);
 
-        $user = Auth::user();
-
         return Inertia::render('Admin/Invoices', [
             'invoicesData' => response()->json($invoices),
             'searchTerm' => $search,
             'sortBy' => $sortBy,
             'sortDirection' => $sortDirection,
-            'user' => $user,
         ]);
     }
 
@@ -58,7 +55,6 @@ class InvoiceController extends Controller
      */
     public function create()
     {
-        $user = Auth::user();
         $customers = Customer::all();
         $products = Product::all();
         $taxRate = Company::first()->tax_rate;
@@ -67,7 +63,6 @@ class InvoiceController extends Controller
             'customers' => $customers,
             'products' => $products,
             'taxRate' => $taxRate,
-            'user' => $user,
         ]);
     }
 

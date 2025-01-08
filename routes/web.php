@@ -47,12 +47,12 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
 
 Route::middleware(['auth', 'role:salesman'])->group(function () {
     Route::get('/salesman/dashboard', function () {
-        return Inertia::render('SalesMan/Home', ['user' => Auth::user()]);
+        return Inertia::render('SalesMan/Home');
     })->name('salesman.home');
 });
 
 Route::middleware(['auth', 'role:accountant'])->group(function () {
     Route::get('/accountant/dashboard', function () {
-        return Inertia::render('Accountant/Home', ['user' => Auth::user()]);
+        return Inertia::render('Accountant/Home');
     })->name('accountant.home');
 });

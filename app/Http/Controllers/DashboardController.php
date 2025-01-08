@@ -19,16 +19,14 @@ class DashboardController extends Controller
         $logs = Log::with(['user', 'invoice'])->get();
         $invoices = Invoice::all();
         $roles = Role::all();
-        $user = Auth::user();
-    
+
         return Inertia::render('Admin/Home', [
             'logs' => response()->json($logs),
             'invoicesData' => response()->json($invoices),
             'roles' => response()->json($roles),
-            'user' => $user,
         ]);
     }
-    
+
 
 
 

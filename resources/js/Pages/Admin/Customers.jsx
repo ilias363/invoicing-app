@@ -3,13 +3,7 @@ import ListCustomers from "@/Components/ListCustomers";
 import SubHeader from "@/Components/SubHeader";
 import { router } from "@inertiajs/react";
 
-const Customers = ({
-    customersData,
-    searchTerm,
-    sortBy,
-    sortDirection,
-    user,
-}) => {
+const Customers = ({ customersData, searchTerm, sortBy, sortDirection }) => {
     const handleSearchSubmit = (search) => {
         router.get(route("admin.customers"), { search, sortBy, sortDirection });
     };
@@ -24,7 +18,7 @@ const Customers = ({
 
     return (
         <>
-            <Header isAdmin={true} user={user} />
+            <Header />
             <SubHeader
                 title={"Customer"}
                 placeholder={"Search by Name"}

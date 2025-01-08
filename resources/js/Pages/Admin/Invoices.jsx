@@ -3,13 +3,7 @@ import ListInvoices from "@/Components/ListInvoices";
 import SubHeader from "@/Components/SubHeader";
 import { router } from "@inertiajs/react";
 
-const Invoices = ({
-    invoicesData,
-    searchTerm,
-    sortBy,
-    sortDirection,
-    user,
-}) => {
+const Invoices = ({ invoicesData, searchTerm, sortBy, sortDirection }) => {
     const handleSearchSubmit = (search) => {
         router.get(route("admin.invoices"), { search, sortBy, sortDirection });
     };
@@ -24,7 +18,7 @@ const Invoices = ({
 
     return (
         <>
-            <Header isAdmin={true} user={user} />
+            <Header />
             <SubHeader
                 title={"Invoice"}
                 placeholder={"Search by Customer, Status, Payment Status"}

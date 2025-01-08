@@ -1,6 +1,9 @@
+import React from "react";
 import ProfileCard from "./ProfilCard";
+import { usePage } from "@inertiajs/react";
 
-function Header({isAdmin,user}) {
+function Header() {
+    const { auth } = usePage().props;
     const logoSrc = "/logonobgwhite.png";
 
     return (
@@ -38,7 +41,7 @@ function Header({isAdmin,user}) {
                         >
                             Customers
                         </a>
-                        {isAdmin && (
+                        {auth.user.role.name === 'admin' && (
                             <a
                                 href="/admin/users"
                                 className="hover:text-[#ACACAC] text-white tracking-widest cursor-pointer"
@@ -51,7 +54,7 @@ function Header({isAdmin,user}) {
 
                 {/* Login Card */}
                 <div className="flex items-center">
-                    <ProfileCard user={user} />
+                    <ProfileCard />
                 </div>
             </nav>
         </header>

@@ -29,14 +29,12 @@ class CustomerController extends Controller
             })
             ->paginate(8);
 
-        $user = Auth::user();
 
         return Inertia::render('Admin/Customers', [
             'customersData' => response()->json($customers),
             'searchTerm' => $search,
             'sortBy' => $sortBy,
             'sortDirection' => $sortDirection,
-            'user' => $user,
         ]);
     }
 
