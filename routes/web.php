@@ -35,6 +35,9 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/admin/create-user', [UserController::class, 'create'])->name('admin.create-user');
     Route::post('/admin/create-user', [UserController::class, 'store']);
 
+    Route::get('/admin/create-customer', [CustomerController::class, 'create'])->name('admin.create-customer');
+    Route::post('/admin/create-customer', [CustomerController::class, 'store']);
+
     Route::post('/admin/invoices/{id}/approve', [InvoiceController::class, 'approve'])->name('admin.invoices.approve');
     Route::post('/admin/invoices/{id}/deny', [InvoiceController::class, 'deny'])->name('admin.invoices.deny');
     Route::get('/admin/invoices/{id}/edit', [InvoiceController::class, 'edit'])->name('admin.invoices.edit');
@@ -44,6 +47,10 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/admin/users/{id}/edit', [UserController::class, 'edit'])->name('admin.users.edit');
     Route::post('/admin/users/{id}/edit', [UserController::class, 'update']);
     Route::delete('/admin/users/{id}/delete', [UserController::class, 'destroy'])->name('admin.users.destroy');
+
+    Route::get('/admin/customers/{id}/edit', [CustomerController::class, 'edit'])->name('admin.customers.edit');
+    Route::post('/admin/customers/{id}/edit', [CustomerController::class, 'update']);
+    Route::delete('/admin/customers/{id}/delete', [CustomerController::class, 'destroy'])->name('admin.customers.destroy');
 });
 
 Route::middleware(['auth', 'role:salesman'])->group(function () {
