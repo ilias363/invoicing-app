@@ -39,6 +39,10 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::post('/invoices/{id}/deny', [InvoiceController::class, 'deny'])->name('invoices.deny');
     Route::get('/invoices/{id}/edit', [InvoiceController::class, 'edit'])->name('invoices.edit');
     Route::delete('/invoices/{id}/delete', [InvoiceController::class, 'destroy'])->name('invoices.destroy');
+
+    Route::get('/admin/users/{id}/edit', [UserController::class, 'edit'])->name('admin.users.edit');
+    Route::post('/admin/users/{id}/edit', [UserController::class, 'update']);
+    Route::delete('/admin/users/{id}/delete', [UserController::class, 'destroy'])->name('admin.users.destroy');
 });
 
 Route::middleware(['auth', 'role:salesman'])->group(function () {

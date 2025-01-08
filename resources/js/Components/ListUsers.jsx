@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import { FaEllipsisH } from "react-icons/fa";
+import { router } from "@inertiajs/react";
+import FlashMessage from "./FlashMessage";
 
 const ListUsers = ({
     users,
@@ -17,6 +19,12 @@ const ListUsers = ({
         if (sortDirection !== null) url += "&sortDirection=" + sortDirection;
 
         return url;
+    };
+
+    const handleDelete = (id) => {
+        if (confirm("Are you sure you want to delete this user?")) {
+            router.delete(route("admin.users.destroy", id));
+        }
     };
 
     const handleSortChange = (newSortBy) => {
@@ -37,6 +45,7 @@ const ListUsers = ({
 
     return (
         <div className="bg-white shadow-lg rounded-xl py-6 px-10 mb-8">
+            <FlashMessage />
             <table className="w-full text-center border-collapse border-2 border-gray-200">
                 <thead className="bg-gray-300 whitespace-nowrap">
                     <tr className="text-lg font-semibold text-gray-600">
@@ -121,22 +130,17 @@ const ListUsers = ({
                                     >
                                         <div className="py-1">
                                             <a
-                                                href="#"
-                                                className="block px-3 py-1 text-sm text-gray-700 hover:bg-gray-100"
-                                                role="menuitem"
-                                            >
-                                                View
-                                            </a>
-                                            <a
-                                                href="#"
+                                                href={`/admin/users/${user.id}/edit`}
                                                 className="block px-3 py-1 text-sm text-gray-700 hover:bg-gray-100"
                                                 role="menuitem"
                                             >
                                                 Edit
                                             </a>
                                             <a
-                                                href="#"
-                                                className="block px-3 py-1 text-sm text-gray-700 hover:bg-gray-100"
+                                                onClick={() => {
+                                                    handleDelete(user.id);
+                                                }}
+                                                className="cursor-pointer block px-3 py-1 text-sm text-gray-700 hover:bg-gray-100"
                                                 role="menuitem"
                                             >
                                                 Delete

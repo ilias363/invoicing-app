@@ -1,27 +1,19 @@
 import React from "react";
 import { useForm } from "@inertiajs/react";
 
-const UserForm = () => {
-  const { data, setData, post, errors, processing } = useForm({
-    first_name: "",
-    last_name: "",
-    email: "",
-    phone: "",
-    password: "",
-    password_confirmation: "",
-    account_status: "active",
-    role_id: "",
-  });
+const UserForm = ({user_data,toCreate}) => {
+  const { data, setData, post, errors, processing } = useForm(user_data);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setData(name, value);
   };
 
+
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    post("/admin/create-user");
+    toCreate ?post("/admin/create-user"):post(`/admin/users/${user_data.user_id}/edit`);
   };
 
   return (
@@ -95,7 +87,7 @@ const UserForm = () => {
             value={data.password}
             onChange={handleChange}
             className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
-            required
+            required={toCreate}
         />
         {errors.password && <p className="text-red-500 text-sm">{errors.password}</p>}
 
@@ -109,7 +101,7 @@ const UserForm = () => {
             value={data.password_confirmation}
             onChange={handleChange}
             className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
-            required
+            required={toCreate}
         />
         {errors.confirm_password && (
             <p className="text-red-500 text-sm">{errors.confirm_password}</p>
@@ -156,7 +148,7 @@ const UserForm = () => {
         className="h-[50%] py-2 px-4 bg-[#2A2A2A] text-white font-medium rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
         disabled={processing}
       >
-        {processing ? "Processing..." : "Create User"}
+        {processing ? "Processing..." : toCreate?"Create User":"Update User"}
       </button>
     </form>
   );

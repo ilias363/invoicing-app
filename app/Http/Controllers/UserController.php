@@ -68,7 +68,6 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        // Validate the incoming request
         $validatedData = $request->validate([
             'first_name' => 'required|string|max:255',
             'last_name' => 'required|string|max:255',
@@ -85,6 +84,7 @@ class UserController extends Controller
             'email.email' => 'The email must be a valid email address.',
             'email.unique' => 'The email is already taken.',
             'password.required' => 'Password is required.',
+            'password.confirmed' => 'The password confirmation does not match.',
             'password_confirmation.required' => 'Password confirmation is required.',
             'account_status.required' => 'Account status is required.',
             'account_status.in' => 'Invalid account status.',
@@ -95,7 +95,6 @@ class UserController extends Controller
         DB::beginTransaction();
 
         try {
-            // Create the user
             $user = User::create([
                 'first_name' => $validatedData['first_name'],
                 'last_name' => $validatedData['last_name'],
@@ -106,16 +105,12 @@ class UserController extends Controller
                 'role_id' => $validatedData['role_id'],
             ]);
 
-            // Commit the transaction
             DB::commit();
 
-            // Redirect to the users list page with a success message
             return redirect()->route('admin.users')->with('success', 'User created successfully!');
         } catch (\Exception $e) {
-            // Rollback the transaction if something goes wrong
             DB::rollBack();
 
-            // Handle the error and return an error response
             return redirect()->back()->withErrors(['error' => 'Failed to create the user. Please try again later.']);
         }
     }
@@ -134,24 +129,80 @@ class UserController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(User $user)
+    public function edit($id)
     {
-        //
+        $user = Auth::user();
+        $userToedit = User::find($id);
+
+        return inertia('Admin/UpdateUser', [
+            'user' => $user,
+            'userToedit' => $userToedit,
+        ]);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, User $user)
+    public function update(Request $request, $id)
     {
-        //
+        $user = User::findOrFail($id);
+
+        $validatedData = $request->validate([
+            'first_name' => 'required|string|max:255',
+            'last_name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email,' . $user->id,
+            'phone' => 'nullable|string|max:20',
+            'password' => 'nullable|string|min:5|confirmed',
+            'account_status' => 'required|in:active,inactive',
+            'role_id' => 'required|exists:roles,id',
+        ], [
+            'first_name.required' => 'First name is required.',
+            'last_name.required' => 'Last name is required.',
+            'email.required' => 'Email is required.',
+            'email.email' => 'The email must be a valid email address.',
+            'email.unique' => 'The email is already taken.',
+            'password.confirmed' => 'The password confirmation does not match.',
+            'account_status.required' => 'Account status is required.',
+            'account_status.in' => 'Invalid account status.',
+            'role_id.required' => 'Role is required.',
+            'role_id.exists' => 'The selected role does not exist.',
+        ]);
+
+        DB::beginTransaction();
+
+        try {
+            $user->first_name = $validatedData['first_name'];
+            $user->last_name = $validatedData['last_name'];
+            $user->email = $validatedData['email'];
+            $user->phone = $validatedData['phone'];
+            $user->account_status = $validatedData['account_status'];
+            $user->role_id = $validatedData['role_id'];
+
+            if (!empty($validatedData['password'])) {
+                $user->password = bcrypt($validatedData['password']);
+            }
+
+            $user->save();
+
+            DB::commit();
+
+            return redirect()->route('admin.users')->with('success', 'User updated successfully!');
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            return redirect()->back()->withErrors(['error' => 'Failed to update the user. Please try again later.']);
+        }
     }
+
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(User $user)
+    public function destroy($id)
     {
-        //
+        $user = User::find($id);
+        $user->delete();
+
+        return redirect()->back()->with('success', 'user deleted successfully.');
     }
 }
