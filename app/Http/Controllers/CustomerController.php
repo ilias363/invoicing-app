@@ -15,16 +15,27 @@ class CustomerController extends Controller
     public function index(Request $request)
     {
         $search = $request->get('search', '');
-        $user = Auth::user();
+        $sortBy = $request->get('sortBy', 'customer_name');
+        $sortDirection = $request->get('sortDirection', 'asc');
+
         $customers = Customer::query()
             ->when($search, function ($query, $search) {
-                $query->whereRaw("CONCAT(first_name, ' ', last_name) LIKE ?", ["%{$search}%"]);
+                $query->whereRaw("CONCAT(last_name, ' ', first_name) LIKE ?", ["%{$search}%"]);
+            })
+            ->when($sortBy === 'customer_name', function ($query) use ($sortDirection) {
+                $query->orderByRaw('CONCAT(last_name, " ", first_name) ' . $sortDirection);
+            }, function ($query) use ($sortBy, $sortDirection) {
+                $query->orderBy($sortBy, $sortDirection);
             })
             ->paginate(8);
+
+        $user = Auth::user();
 
         return Inertia::render('Admin/Customers', [
             'customersData' => response()->json($customers),
             'searchTerm' => $search,
+            'sortBy' => $sortBy,
+            'sortDirection' => $sortDirection,
             'user' => $user,
         ]);
     }

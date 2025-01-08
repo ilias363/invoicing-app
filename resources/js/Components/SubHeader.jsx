@@ -39,46 +39,8 @@ const SubHeader = ({ title, placeholder, onSearchSubmit, search, createLink }) =
                             d="M21 21l-4.35-4.35M16.2 10.8a5.4 5.4 0 11-10.8 0 5.4 5.4 0 0110.8 0z"
                         />
                     </svg>
-                    {/* <button
-                        type="submit"
-                        className="absolute right-3 top-[13px] text-gray-500 focus:outline-none"
-                    >
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            className="w-4 h-4"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                        >
-                            <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M6 18L18 6M6 6l12 12"
-                            />
-                        </svg>
-                    </button> */}
                 </form>
-
-                {/* Filter Button */}
-                {/* <button className="bg-gray-300 text-gray-800 py-2 px-4 rounded-md flex items-center space-x-2 hover:bg-gray-400 focus:outline-none">
-                    <span>Filter Invoices</span>
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="w-4 h-4"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                    >
-                        <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M19 9l-7 7-7-7"
-                        />
-                    </svg>
-                </button> */}
-
+                
                 {/* Create Invoice Button */}
                 <a
                     href={createLink}

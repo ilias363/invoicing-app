@@ -1,8 +1,35 @@
 import React, { useState } from "react";
 import { FaEllipsisH } from "react-icons/fa";
 
-const ListCustomers = ({ customers, pages, searchTerm }) => {
+const ListCustomers = ({
+    customers,
+    pages,
+    searchTerm,
+    onSortChange,
+    sortBy,
+    sortDirection,
+}) => {
     const [openCustomerId, setOpenCustomerId] = useState(null);
+
+    const makeUrlWithParams = (url) => {
+        if (searchTerm !== null) url += "&search=" + searchTerm;
+        if (sortBy !== null) url += "&sortBy=" + sortBy;
+        if (sortDirection !== null) url += "&sortDirection=" + sortDirection;
+
+        return url;
+    };
+
+    const handleSortChange = (newSortBy) => {
+        let newSortDirection = sortDirection;
+
+        if (newSortBy === sortBy) {
+            newSortDirection = sortDirection === "asc" ? "desc" : "asc";
+        } else {
+            newSortDirection = "desc";
+        }
+
+        onSortChange(newSortBy, newSortDirection);
+    };
 
     const toggleActionsMenu = (customerId) => {
         setOpenCustomerId(openCustomerId === customerId ? null : customerId);
@@ -11,13 +38,48 @@ const ListCustomers = ({ customers, pages, searchTerm }) => {
     return (
         <div className="bg-white shadow-lg rounded-xl py-6 px-10 mb-8">
             <table className="w-full text-center border-collapse border-2 border-gray-200">
-                <thead className="bg-gray-300">
+                <thead className="bg-gray-300 whitespace-nowrap">
                     <tr className="text-lg font-semibold text-gray-600">
-                        <th className="border px-6 py-3">Customer ID</th>
-                        <th className="border px-6 py-3">Name</th>
-                        <th className="border px-6 py-3">E-mail</th>
-                        <th className="border px-6 py-3">Phone Number</th>
-                        <th className="border px-6 py-3">Address</th>
+                        <th
+                            className="border px-6 py-3 cursor-pointer"
+                            onClick={() => handleSortChange("id")}
+                        >
+                            Customer ID{" "}
+                            {sortBy === "id" &&
+                                (sortDirection === "asc" ? "↑" : "↓")}
+                        </th>
+                        <th
+                            className="border px-6 py-3 cursor-pointer"
+                            onClick={() => handleSortChange("customer_name")}
+                        >
+                            Name{" "}
+                            {sortBy === "customer_name" &&
+                                (sortDirection === "asc" ? "↑" : "↓")}
+                        </th>
+                        <th
+                            className="border px-6 py-3 cursor-pointer"
+                            onClick={() => handleSortChange("email")}
+                        >
+                            E-mail{" "}
+                            {sortBy === "email" &&
+                                (sortDirection === "asc" ? "↑" : "↓")}
+                        </th>
+                        <th
+                            className="border px-6 py-3 cursor-pointer"
+                            onClick={() => handleSortChange("phone")}
+                        >
+                            Phone Number{" "}
+                            {sortBy === "phone" &&
+                                (sortDirection === "asc" ? "↑" : "↓")}
+                        </th>
+                        <th
+                            className="border px-6 py-3 cursor-pointer"
+                            onClick={() => handleSortChange("address")}
+                        >
+                            Address{" "}
+                            {sortBy === "address" &&
+                                (sortDirection === "asc" ? "↑" : "↓")}
+                        </th>
                         <th className="border px-6 py-3">Actions</th>
                     </tr>
                 </thead>
@@ -31,7 +93,7 @@ const ListCustomers = ({ customers, pages, searchTerm }) => {
                                 {customer.id}
                             </td>
                             <td className="border px-6 py-4 text-gray-800">
-                                {customer.first_name} {customer.last_name}
+                                {customer.last_name} {customer.first_name}
                             </td>
                             <td className="border px-6 py-4 text-gray-800">
                                 {customer.email}
@@ -96,9 +158,7 @@ const ListCustomers = ({ customers, pages, searchTerm }) => {
                         href={
                             link.url === null
                                 ? "#"
-                                : searchTerm
-                                ? link.url + "&search=" + searchTerm
-                                : link.url
+                                : makeUrlWithParams(link.url)
                         }
                         disabled={link.url === null}
                         className={`flex items-center justify-center px-5 py-2 text-md font-medium rounded-lg transition duration-300 ease-in-out hover:bg-blue-300 hover:text-black 

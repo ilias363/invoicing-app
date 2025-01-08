@@ -3,9 +3,23 @@ import ListCustomers from "@/Components/ListCustomers";
 import SubHeader from "@/Components/SubHeader";
 import { router } from "@inertiajs/react";
 
-const Customers = ({ customersData, searchTerm,user }) => {
+const Customers = ({
+    customersData,
+    searchTerm,
+    sortBy,
+    sortDirection,
+    user,
+}) => {
     const handleSearchSubmit = (search) => {
-        router.get(route("admin.customers"), { search });
+        router.get(route("admin.customers"), { search, sortBy, sortDirection });
+    };
+
+    const handleSortChange = (sortBy, sortDirection) => {
+        router.get(route("admin.customers"), {
+            search: searchTerm,
+            sortBy,
+            sortDirection,
+        });
     };
 
     return (
@@ -22,6 +36,9 @@ const Customers = ({ customersData, searchTerm,user }) => {
                 customers={customersData.original.data}
                 pages={customersData.original.links}
                 searchTerm={searchTerm}
+                onSortChange={handleSortChange}
+                sortBy={sortBy}
+                sortDirection={sortDirection}
             />
         </>
     );

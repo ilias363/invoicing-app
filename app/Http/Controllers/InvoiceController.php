@@ -19,16 +19,25 @@ class InvoiceController extends Controller
     public function index(Request $request)
     {
         $search = $request->get('search', '');
+        $sortBy = $request->get('sortBy', 'invoice_date');
+        $sortDirection = $request->get('sortDirection', 'desc');
 
         $invoices = Invoice::query()
             ->with('customer')
+            ->select('invoices.*')
+            ->leftJoin('customers', 'invoices.customer_id', '=', 'customers.id')
             ->when($search, function ($query, $search) {
-                $query->whereHas('customer', function ($query) use ($search) {
-                    $query->where('first_name', 'like', "%{$search}%")
-                        ->orWhere('last_name', 'like', "%{$search}%");
-                })
-                    ->orWhere('status', 'like', "%{$search}%")
-                    ->orWhere('payment_status', 'like', "%{$search}%");
+                $query->where(function ($query) use ($search) {
+                    $query->where('customers.first_name', 'like', "%{$search}%")
+                        ->orWhere('customers.last_name', 'like', "%{$search}%")
+                        ->orWhere('invoices.status', 'like', "%{$search}%")
+                        ->orWhere('invoices.payment_status', 'like', "%{$search}%");
+                });
+            })
+            ->when($sortBy === 'customer_name', function ($query) use ($sortDirection) {
+                $query->orderByRaw('CONCAT(customers.last_name, " ", customers.first_name) ' . $sortDirection);
+            }, function ($query) use ($sortBy, $sortDirection) {
+                $query->orderBy('invoices.' . $sortBy, $sortDirection);
             })
             ->paginate(8);
 
@@ -37,9 +46,12 @@ class InvoiceController extends Controller
         return Inertia::render('Admin/Invoices', [
             'invoicesData' => response()->json($invoices),
             'searchTerm' => $search,
+            'sortBy' => $sortBy,
+            'sortDirection' => $sortDirection,
             'user' => $user,
         ]);
     }
+
 
     /**
      * Show the form for creating a new resource.
@@ -117,6 +129,9 @@ class InvoiceController extends Controller
                     'product_id' => $product['id'],
                     'quantity' => $product['quantity'],
                 ]);
+
+                $productModel->stock_quantity -= $product['quantity'];
+                $productModel->save();
             }
 
             $invoice->update([
@@ -126,17 +141,12 @@ class InvoiceController extends Controller
             DB::commit();
 
             return redirect()->route("admin.invoices");
-            // return response()->json([
-            //     'message' => 'Invoice created successfully!',
-            //     'invoice' => $invoice,
-            // ]);
         } catch (\Exception $e) {
             DB::rollBack();
 
-            return response()->json([
-                'message' => 'Failed to create the invoice.',
-                'error' => $e->getMessage(),
-            ], 500);
+            return back()->withErrors([
+                'creation' => 'Error creating the invoice.',
+            ]);
         }
     }
 
