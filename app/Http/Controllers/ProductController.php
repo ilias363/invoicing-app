@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 
 class ProductController extends Controller
@@ -39,19 +40,54 @@ class ProductController extends Controller
      */
     public function create()
     {
-        //
+        return Inertia::render('Admin/CreateProduct');
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Store a newly created product in storage.
      */
     public function store(Request $request)
     {
-        //
+        $validatedData = $request->validate([
+            'name' => 'required|string|max:255',
+            'description' => 'nullable|string|max:1000',
+            'price' => 'required|numeric|min:0',
+            'stock_quantity' => 'required|integer|min:0',
+            'discount' => 'nullable|numeric|min:0|max:100',
+            'category' => 'nullable|string|max:255',
+        ], [
+            'name.required' => 'Product name is required.',
+            'price.required' => 'Price is required.',
+            'price.numeric' => 'Price must be a valid number.',
+            'discount.numeric' => 'Discount must be a valid number.',
+            'stock_quantity.required' => 'Stock quantity is required.',
+            'stock_quantity.integer' => 'Stock quantity must be an integer.',
+        ]);
+
+        DB::beginTransaction();
+
+        try {
+            $product = Product::create([
+                'name' => $validatedData['name'],
+                'description' => $validatedData['description'],
+                'price' => $validatedData['price'],
+                'stock_quantity' => $validatedData['stock_quantity'],
+                'category' => $validatedData['category'],
+                'discount' => $validatedData['discount'],
+            ]);
+
+            DB::commit();
+
+            return redirect()->route('admin.products')->with('success', 'Product created successfully!');
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            return redirect()->back()->with('error','Failed to create the product. Please try again later.');
+        }
     }
 
     /**
-     * Display the specified resource.
+     * Display the specified product.
      */
     public function show(Product $product)
     {
@@ -59,26 +95,71 @@ class ProductController extends Controller
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * Show the form for editing the specified product.
      */
-    public function edit(Product $product)
+    public function edit($id)
     {
-        //
+        $productToEdit = Product::find($id);
+
+        return inertia('Admin/UpdateProduct', [
+            'productToEdit' => $productToEdit,
+        ]);
     }
 
     /**
-     * Update the specified resource in storage.
+     * Update the specified product in storage.
      */
-    public function update(Request $request, Product $product)
+    public function update(Request $request, $id)
     {
-        //
+        $product = Product::findOrFail($id);
+
+        $validatedData = $request->validate([
+            'name' => 'required|string|max:255',
+            'description' => 'nullable|string|max:1000',
+            'price' => 'required|numeric|min:0',
+            'stock_quantity' => 'required|integer|min:0',
+            'category' => 'nullable|string|max:255',
+        ], [
+            'name.required' => 'Product name is required.',
+            'price.required' => 'Price is required.',
+            'price.numeric' => 'Price must be a valid number.',
+            'stock_quantity.required' => 'Stock quantity is required.',
+            'stock_quantity.integer' => 'Stock quantity must be an integer.',
+        ]);
+
+        DB::beginTransaction();
+
+        try {
+            $product->name = $validatedData['name'];
+            $product->description = $validatedData['description'];
+            $product->price = $validatedData['price'];
+            $product->stock_quantity = $validatedData['stock_quantity'];
+            $product->category = $validatedData['category'];
+
+            $product->save();
+
+            DB::commit();
+
+            return redirect()->route('admin.products')->with('success', 'Product updated successfully!');
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            return redirect()->back()->withErrors(['error' => 'Failed to update the product. Please try again later.']);
+        }
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Remove the specified product from storage.
      */
-    public function destroy(Product $product)
+    public function destroy($id)
     {
-        //
+        $product = Product::find($id);
+
+        if ($product) {
+            $product->delete();
+            return redirect()->back()->with('success', 'Product deleted successfully.');
+        }
+
+        return redirect()->back()->withErrors(['error' => 'Product not found.']);
     }
 }

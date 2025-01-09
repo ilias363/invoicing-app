@@ -38,6 +38,9 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/admin/create-customer', [CustomerController::class, 'create'])->name('admin.create-customer');
     Route::post('/admin/create-customer', [CustomerController::class, 'store']);
 
+    Route::get('/admin/create-product', [ProductController::class, 'create'])->name('admin.create-product');
+    Route::post('/admin/create-product', [ProductController::class, 'store']);
+
     Route::post('/admin/invoices/{id}/approve', [InvoiceController::class, 'approve'])->name('admin.invoices.approve');
     Route::post('/admin/invoices/{id}/deny', [InvoiceController::class, 'deny'])->name('admin.invoices.deny');
     Route::get('/admin/invoices/{id}/edit', [InvoiceController::class, 'edit'])->name('admin.invoices.edit');
@@ -51,6 +54,10 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/admin/customers/{id}/edit', [CustomerController::class, 'edit'])->name('admin.customers.edit');
     Route::post('/admin/customers/{id}/edit', [CustomerController::class, 'update']);
     Route::delete('/admin/customers/{id}/delete', [CustomerController::class, 'destroy'])->name('admin.customers.destroy');
+
+    Route::get('/admin/products/{id}/edit', [ProductController::class, 'edit'])->name('admin.products.edit');
+    Route::post('/admin/products/{id}/edit', [ProductController::class, 'update']);
+    Route::delete('/admin/products/{id}/delete', [ProductController::class, 'destroy'])->name('admin.products.destroy');
 });
 
 Route::middleware(['auth', 'role:salesman'])->group(function () {

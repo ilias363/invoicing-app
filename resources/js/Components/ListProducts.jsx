@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import { FaEllipsisH } from "react-icons/fa";
+import { router } from "@inertiajs/react";
+import FlashMessage from "./FlashMessage";
 
 const ListProducts = ({
     products,
@@ -31,12 +33,19 @@ const ListProducts = ({
         onSortChange(newSortBy, newSortDirection);
     };
 
+    const handleDelete = (id) => {
+        if (confirm("Are you sure you want to delete this product?")) {
+            router.delete(route("admin.products.destroy", id));
+        }
+    };
+
     const toggleActionsMenu = (productId) => {
         setOpenProductId(openProductId === productId ? null : productId);
     };
 
     return (
         <div className="bg-white shadow-lg rounded-xl py-6 px-10 mb-8">
+            <FlashMessage />
             <table className="w-full text-center border-collapse border-2 border-gray-200">
                 <thead className="bg-gray-300 whitespace-nowrap">
                     <tr className="text-lg font-semibold text-gray-600">
@@ -138,21 +147,16 @@ const ListProducts = ({
                                     >
                                         <div className="py-1">
                                             <a
-                                                href="#"
-                                                className="block px-3 py-1 text-sm text-gray-700 hover:bg-gray-100"
-                                                role="menuitem"
-                                            >
-                                                View
-                                            </a>
-                                            <a
-                                                href="#"
+                                                href={`/admin/products/${product.id}/edit`}
                                                 className="block px-3 py-1 text-sm text-gray-700 hover:bg-gray-100"
                                                 role="menuitem"
                                             >
                                                 Edit
                                             </a>
                                             <a
-                                                href="#"
+                                                onClick={() => {
+                                                    handleDelete(product.id);
+                                                }}
                                                 className="block px-3 py-1 text-sm text-gray-700 hover:bg-gray-100"
                                                 role="menuitem"
                                             >
