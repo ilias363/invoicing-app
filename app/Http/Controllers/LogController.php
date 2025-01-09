@@ -15,7 +15,7 @@ class LogController extends Controller
     {
         $logs = Log::with(['user', 'invoice'])->get();
 
-        return Inertia::render('Admin/Home', [
+        return Inertia::render('Home', [
             'logs' => response()->json($logs)
         ]);
     }
@@ -33,7 +33,16 @@ class LogController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        // Validate the incoming request data
+        $validated = $request->validate([
+            'time_action' => 'required|date',
+            'action' => 'required|string|max:255',
+            'user_id' => 'required|exists:users,id',
+            'invoice_id' => 'required|exists:invoices,id',
+        ]);
+
+        $log = Log::create($validated);
+
     }
 
     /**
