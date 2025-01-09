@@ -14,14 +14,16 @@ class DocStyleFactory extends Factory
 
     public function definition(): array
     {
-        return [
-            'layout' => $this->faker->word,
-            'font' => $this->faker->word,
-            'color1' => $this->faker->hexColor,
-            'color2' => $this->faker->hexColor,
-            'layout_bg' => $this->faker->word,
-            'template_path' => $this->faker->filePath(),
-            'is_default' => $this->faker->boolean,
+        return [ 
+            'font_family' => $this->faker->randomElement([
+                'Lato, sans-serif',
+                'Arial, sans-serif',
+                'Times New Roman, sans-serif',
+                'Roboto, sans-serif',
+            ]),
+            'title_color' => $this->faker->hexColor(),
+            'table_head_color' => $this->faker->hexColor(),
+            'bg_color' => $this->faker->hexColor(),
         ];
     }
 }

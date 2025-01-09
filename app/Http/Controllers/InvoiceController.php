@@ -175,9 +175,38 @@ class InvoiceController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Invoice $invoice)
+    public function show($id)
     {
-        //
+        try {
+            $company = Company::first();
+            $invoice = Invoice::with([
+                'customer',
+                'products' => function ($query) {
+                    $query->withPivot('quantity');
+                }
+            ])->findOrFail($id);
+            $docStyle = $invoice->doc_style ?? [
+                'font_family' => 'Lato, sans-serif',
+                'title_color' => '#5C3D64',
+                'table_head_color' => '#000000',
+                'bg_color' => '#ffffff'
+            ];
+            $fonts = [
+                'Lato, sans-serif',
+                'Arial, sans-serif',
+                'Times New Roman, sans-serif',
+                'Roboto, sans-serif',
+            ];
+
+            return Inertia::render('PreviewInvoice', [
+                'company' => $company,
+                'invoice' => $invoice,
+                'docStyle' => $docStyle,
+                'fonts' => $fonts,
+            ]);
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Invoice not found.');
+        }
     }
 
     /**
@@ -293,8 +322,6 @@ class InvoiceController extends Controller
             return redirect()->back()->with('error', 'Error updating the invoice.');
         }
     }
-
-
 
     /**
      * Remove the specified resource from storage.

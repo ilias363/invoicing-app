@@ -1,276 +1,302 @@
 import React, { useState } from "react";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
+import { toWords } from "number-to-words";
 
-const Preview = ({ invoiceData, docStyle }) => {
-  const [logoPreview, setLogoPreview] = useState(invoiceData.logo || "");
-  const [titleColor, setTitleColor] = useState(docStyle.titleColor || "#5C3D64");
-  const [tableColor, setTableColor] = useState(docStyle.tableColor || "#000000");
-  const [font, setFont] = useState(docStyle.font || "Lato, sans-serif");
-  const [backgroundColor, setBackgroundColor] = useState(
-    docStyle.backgroundColor || "#ffffff"
-  );
+const Preview = ({ company, invoice, docStyle, fonts }) => {
+    const [titleColor, setTitleColor] = useState(docStyle.title_color);
+    const [tableColor, setTableColor] = useState(docStyle.table_head_color);
+    const [font, setFont] = useState(docStyle.font_family);
+    const [backgroundColor, setBackgroundColor] = useState(docStyle.bg_color);
 
-  // Generate PDF
-  const generatePDF = () => {
-    const content = document.getElementById("invoice-preview");
-    const options = { scale: 2 };
+    // Generate PDF
+    const generatePDF = (buffer = false) => {
+        const content = document.getElementById("invoice-preview");
+        const options = { scale: 2 };
 
-    html2canvas(content, options)
-      .then((canvas) => {
-        const imgData = canvas.toDataURL("image/png");
-        const pdf = new jsPDF("p", "mm", "a4");
-        const imgWidth = 210; // A4 width in mm
-        const imgHeight = (canvas.height * imgWidth) / canvas.width;
+        html2canvas(content, options)
+            .then((canvas) => {
+                const imgData = canvas.toDataURL("image/png");
+                const pdf = new jsPDF("p", "mm", "a4");
+                const imgWidth = 210; // A4 width in mm
+                const imgHeight = (canvas.height * imgWidth) / canvas.width;
 
-        pdf.addImage(imgData, "PNG", 0, 0, imgWidth, imgHeight);
-        pdf.save(`${invoiceData.invoiceNumber || "facture"}.pdf`);
-      })
-      .catch((err) => {
-        console.error("PDF generation error:", err);
-      });
-  };
+                pdf.addImage(imgData, "PNG", 0, 0, imgWidth, imgHeight);
+                buffer
+                    ? sendEmailToBackend(pdf.output("arraybuffer"))
+                    : pdf.save(
+                          `INV-${invoice.id.toString().padStart(4, "0")}.pdf`
+                      );
+            })
+            .catch((err) => {
+                alert(
+                    "An error occurred while generating the PDF. Please try again."
+                );
+                console.error("PDF generation error:", err);
+            });
+    };
 
-// Calcul des totaux
-const subtotal = invoiceData.items.reduce(
-    (acc, item) => acc + item.quantity * item.unitPrice,
-    0
-  );
-  const taxAmount = (subtotal * invoiceData.taxRate) / 100;
-  const total = subtotal + taxAmount - invoiceData.discount;
+    const sendEmailToBackend = (pdfBuffer) => {
+        // Inertia.post("/send-invoice-email", { pdfBuffer, invoice: invoice });
+        console.log(pdfBuffer, " sent to backend");
+    };
 
-// Fonction pour convertir les montants en toutes lettres
-const numberToWords = (nombre) => {
-    const unite = ["", "un", "deux", "trois", "quatre", "cinq", "six", "sept", "huit", "neuf"];
-    const dizaine = ["", "dix", "vingt", "trente", "quarante", "cinquante", "soixante", "soixante-dix", "quatre-vingt", "quatre-vingt-dix"];
-    const special = ["dix", "onze", "douze", "treize", "quatorze", "quinze", "seize", "dix-sept", "dix-huit", "dix-neuf"];
-    
-    function moinsDeCent(n) {
-        if (n < 10) return unite[n];
-        if (n < 20) return special[n - 10];
-        const d = Math.floor(n / 10);
-        const u = n % 10;
-        const sep = (d === 7 || d === 9) ? "-" : (u === 1 ? "-et-" : "-");
-        return dizaine[d] + (u > 0 ? sep + unite[u] : "");
-    }
+    // Calculate totals
+    const subtotal = invoice.products.reduce((acc, product) => {
+        const productTotal =
+            product.pivot.quantity *
+            product.price *
+            (1 - product.discount / 100);
+        return acc + productTotal;
+    }, 0);
 
-    function moinsDeMille(n) {
-        const c = Math.floor(n / 100);
-        const reste = n % 100;
-        if (c === 0) return moinsDeCent(reste);
-        if (c === 1) return "cent" + (reste > 0 ? " " + moinsDeCent(reste) : "");
-        return unite[c] + " cent" + (reste > 0 ? " " + moinsDeCent(reste) : "");
-    }
+    const taxAmount = (subtotal * company.tax_rate) / 100;
 
-    function enLettres(n) {
-        if (n === 0) return "zéro";
-        if (n > 999999) return "Nombre trop grand";
-        
-        const milles = Math.floor(n / 1000);
-        const reste = n % 1000;
+    const total = subtotal + taxAmount;
 
-        let resultat = "";
-        if (milles > 0) {
-            resultat += (milles === 1 ? "mille" : moinsDeMille(milles)) + " ";
-        }
-        if (reste > 0) {
-            resultat += moinsDeMille(reste);
-        }
-        return resultat.trim();
-    }
+    // Function to convert amounts to words
+    const numberToWords = (number) => {
+        return toWords(number).replace(/,/g, "");
+    };
 
-    return enLettres(nombre);
-};
+    return (
+        <div className="flex w-full">
+            <aside className="w-[20%] bg-gray-100 p-4 border-r overflow-y-auto fixed h-full flex flex-col">
+                <h2 className="text-lg font-bold mb-4">Configure Layout</h2>
 
-  return (
-    <div className="flex w-full ">
-      <aside className="w-[20%] bg-gray-100 p-4 border-r overflow-y-auto fixed h-full flex flex-col">
-        <h2 className="text-lg font-bold mb-4">Configurer l'agencement</h2>
-
-        <div className="mb-4">
-          <label className="block font-semibold mb-1">Couleur du titre</label>
-          <input
-            type="color"
-            value={titleColor}
-            onChange={(e) => setTitleColor(e.target.value)}
-            className="w-full h-10 p-1"
-          />
-        </div>
-
-        <div className="mb-4">
-          <label className="block font-semibold mb-1">Couleur du tableau</label>
-          <input
-            type="color"
-            value={tableColor}
-            onChange={(e) => setTableColor(e.target.value)}
-            className="w-full h-10 p-1"
-          />
-        </div>
-
-        <div className="mb-4">
-          <label className="block font-semibold mb-1">Police</label>
-          <select
-            value={font}
-            onChange={(e) => setFont(e.target.value)}
-            className="w-full border rounded p-2"
-          >
-            <option value="Lato, sans-serif">Lato</option>
-            <option value="Arial, sans-serif">Arial</option>
-            <option value="Times New Roman, serif">Times New Roman</option>
-          </select>
-        </div>
-
-        <div className="mb-4">
-          <label className="block font-semibold mb-1">
-            Couleur de l'arrière-plan
-          </label>
-          <input
-            type="color"
-            value={backgroundColor}
-            onChange={(e) => setBackgroundColor(e.target.value)}
-            className="w-full h-10 p-1"
-          />
-        </div>
-        <button
-          onClick={generatePDF}
-          className="mt-4 px-4 py-2 bg-[#2A2A2A] text-white rounded hover:bg-blue-700"
-        >
-          Télécharger PDF
-        </button>
-        <button
-          className="mt-4 px-4 py-2 bg-[#2A2A2A] text-white rounded hover:bg-blue-700"
-        >
-          Envoyer Par Mail
-        </button>
-      </aside>
-
-      <main 
-        className="flex-1 p-6 ml-72">
-        <h1 className="text-3xl text-center font-bold mb-4 underline">Aperçu de la facture</h1>
-        <div
-            id="invoice-preview"
-            className="p-6 border rounded-lg bg-white mx-auto w-[210mm] h-[297mm]"
-            style={{
-                fontFamily: font,
-                backgroundColor: backgroundColor
-            }}
-            >
-            {/* En-tête */}
-            <div className="flex justify-between items-center mb-5">
-                <img
-                src={invoiceData.company.logoUrl}
-                alt="Logo de l'entreprise"
-                className="max-h-20"
-                />
-                <div className="text-right">
-                <p>{invoiceData.company.name}</p>
-                <p>{invoiceData.company.address}</p>
-                <p>{invoiceData.company.country}</p>
-                <p>ICE: {invoiceData.company.taxId}</p>
+                <div className="mb-4">
+                    <label className="block font-semibold mb-1">
+                        Title Color
+                    </label>
+                    <input
+                        type="color"
+                        value={titleColor}
+                        onChange={(e) => setTitleColor(e.target.value)}
+                        className="w-full h-10 p-1"
+                    />
                 </div>
-            </div>
 
-            {/* Titre Facture */}
-            <div className="text-right mb-5">
-                <h1
-                className="text-3xl font-bold"
-                style={{ color: titleColor }}
+                <div className="mb-4">
+                    <label className="block font-semibold mb-1">
+                        Table Header Color
+                    </label>
+                    <input
+                        type="color"
+                        value={tableColor}
+                        onChange={(e) => setTableColor(e.target.value)}
+                        className="w-full h-10 p-1"
+                    />
+                </div>
+
+                <div className="mb-4">
+                    <label className="block font-semibold mb-1">Font</label>
+                    <select
+                        value={font}
+                        onChange={(e) => setFont(e.target.value)}
+                        className="w-full border rounded p-2"
+                    >
+                        {fonts.map((font) => {
+                            const fontName = font.split(",")[0];
+                            return (
+                                <option key={font} value={font}>
+                                    {fontName}
+                                </option>
+                            );
+                        })}
+                    </select>
+                </div>
+
+                <div className="mb-4">
+                    <label className="block font-semibold mb-1">
+                        Background Color
+                    </label>
+                    <input
+                        type="color"
+                        value={backgroundColor}
+                        onChange={(e) => setBackgroundColor(e.target.value)}
+                        className="w-full h-10 p-1"
+                    />
+                </div>
+                <button
+                    onClick={() => generatePDF(false)}
+                    className="mt-4 px-4 py-2 bg-[#2A2A2A] text-white rounded hover:bg-blue-700"
                 >
-                Facture {invoiceData.invoiceNumber}
+                    Download PDF
+                </button>
+                <button
+                    onClick={() => generatePDF(true)}
+                    className="mt-4 px-4 py-2 bg-[#2A2A2A] text-white rounded hover:bg-blue-700"
+                >
+                    Send by Email
+                </button>
+            </aside>
+
+            <main className="flex-1 p-6 ml-72">
+                <h1 className="text-3xl text-center font-bold mb-4 underline">
+                    Invoice Preview
                 </h1>
-            </div>
+                <div
+                    id="invoice-preview"
+                    className="p-6 border rounded-lg bg-white mx-auto w-[210mm] h-[297mm]"
+                    style={{
+                        fontFamily: font,
+                        backgroundColor: backgroundColor,
+                    }}
+                >
+                    {/* Header */}
+                    <div className="flex justify-between items-center mb-5">
+                        <img
+                            src={"/logo_no_bg.png"}
+                            alt="Company Logo"
+                            className="max-h-20 mr-4"
+                        />
+                        <div className="text-right">
+                            <p>{company.name}</p>
+                            <p>{company.address}</p>
+                            <p>{company.email}</p>
+                            <p>{company.phone}</p>
+                            <p>Tax ID: {company.tax_id}</p>
+                        </div>
+                    </div>
 
-            {/* Informations sur les dates */}
-            <div className="grid grid-cols-2 gap-4 border rounded p-4 mb-5">
-                <div>
-                <p className="font-semibold">Date de facturation</p>
-                <p>{invoiceData.invoiceDate}</p>
+                    {/* Invoice Title */}
+                    <div className="text-right mb-5">
+                        <h1
+                            className="text-3xl font-bold"
+                            style={{ color: titleColor }}
+                        >
+                            Invoice{" "}
+                            {`INV-${invoice.id.toString().padStart(4, "0")}`}
+                        </h1>
+                    </div>
+
+                    {/* Dates */}
+                    <div className="grid grid-cols-2 gap-4 border rounded p-4 mb-5">
+                        <div>
+                            <p className="font-semibold">Invoice Date</p>
+                            <p>{invoice.invoice_date}</p>
+                        </div>
+                        <div>
+                            <p className="font-semibold">Due Date</p>
+                            <p>{invoice.due_date}</p>
+                        </div>
+                    </div>
+
+                    {/* Customer */}
+                    <div className="text-left mb-5">
+                        <p>{`${invoice.customer.last_name} ${invoice.customer.first_name}`}</p>
+                        <p>{invoice.customer.address}</p>
+                        <p>{invoice.customer.email}</p>
+                        <p>{invoice.customer.phone}</p>
+                    </div>
+
+                    {/* Product/Service Table */}
+                    <table className="w-full border-collapse border mb-5 whitespace-nowrap">
+                        <thead>
+                            <tr
+                                style={{
+                                    backgroundColor: tableColor,
+                                    color: "#FFF",
+                                }}
+                            >
+                                <th className="text-left p-2 border">
+                                    Product Name
+                                </th>
+                                <th className="text-right p-2 border">
+                                    QUANTITY
+                                </th>
+                                <th className="text-right p-2 border">
+                                    UNIT PRICE
+                                </th>
+                                <th className="text-right p-2 border">
+                                    DISCOUNT
+                                </th>
+                                <th className="text-right p-2 border">
+                                    AMOUNT
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {invoice.products.map((product, index) => (
+                                <tr key={index}>
+                                    <td className="p-2 border">
+                                        {product.name}
+                                    </td>
+                                    <td className="text-right p-2 border">
+                                        {product.pivot.quantity}
+                                    </td>
+                                    <td className="text-right p-2 border">
+                                        {product.price.toFixed(2)} DH
+                                    </td>
+                                    <td className="text-right p-2 border">
+                                        {product.discount.toFixed(2)} %
+                                    </td>
+                                    <td className="text-right p-2 border">
+                                        {(
+                                            product.pivot.quantity *
+                                            product.price *
+                                            (1 - product.discount / 100)
+                                        ).toFixed(2)}{" "}
+                                        DH
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td
+                                    colSpan="4"
+                                    className="text-right p-2 border font-semibold"
+                                >
+                                    Untaxed Amount
+                                </td>
+                                <td className="text-right p-2 border font-semibold">
+                                    {subtotal.toFixed(2)} DH
+                                </td>
+                            </tr>
+                            <tr>
+                                <td
+                                    colSpan="4"
+                                    className="text-right p-2 border font-semibold"
+                                >
+                                    Tax {company.tax_rate}%
+                                </td>
+                                <td className="text-right p-2 border font-semibold">
+                                    {taxAmount.toFixed(2)} DH
+                                </td>
+                            </tr>
+                            <tr>
+                                <td
+                                    colSpan="4"
+                                    className="text-right p-2 border font-semibold"
+                                >
+                                    Total Amount
+                                </td>
+                                <td className="text-right p-2 border font-semibold">
+                                    {total.toFixed(2)} DH
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
+
+                    {/* Amount in Words */}
+                    <p className="text-right font-semibold">
+                        Total Amount in Words: {numberToWords(total)}
+                    </p>
+
+                    {/* Notes */}
+                    <div className="mt-5">
+                        <p>
+                            <strong>Notes:</strong> {invoice.notes}
+                        </p>
+                        <div className="mt-5 text-center border-t pt-2">
+                            <p>Contact us: {company.email}</p>
+                        </div>
+                    </div>
                 </div>
-                <div>
-                <p className="font-semibold">Date d'échéance</p>
-                <p>{invoiceData.dueDate}</p>
-                </div>
-            </div>
-            
-            {/* Client */}
-            <div className="text-left mb-5">
-                <p>{invoiceData.client.name}</p>
-                <p>{invoiceData.client.address}</p>
-                <p>{invoiceData.client.email}</p>
-            </div>
-
-            {/* Tableau des produits/services */}
-            <table className="w-full border-collapse border mb-5">
-                <thead>
-                <tr style={{ backgroundColor: tableColor, color: "#FFF" }}>
-                    <th className="text-left p-2 border">DESCRIPTION</th>
-                    <th className="text-right p-2 border">QUANTITÉ</th>
-                    <th className="text-right p-2 border">PRIX UNITAIRE</th>
-                    <th className="text-right p-2 border">TAXES</th>
-                    <th className="text-right p-2 border">MONTANT</th>
-                </tr>
-                </thead>
-                <tbody>
-                {invoiceData.items.map((item, index) => (
-                    <tr key={index}>
-                    <td className="p-2 border">{item.description}</td>
-                    <td className="text-right p-2 border">{item.quantity.toFixed(2)}</td>
-                    <td className="text-right p-2 border">{item.unitPrice.toFixed(2)} DH</td>
-                    <td className="text-right p-2 border">
-                        Opérations de production et de distribution
-                    </td>
-                    <td className="text-right p-2 border">
-                        {(item.quantity * item.unitPrice).toFixed(2)} DH
-                    </td>
-                    </tr>
-                ))}
-                </tbody>
-                <tfoot>
-                <tr>
-                    <td colSpan="4" className="text-right p-2 border font-semibold">
-                    Montant hors taxes
-                    </td>
-                    <td className="text-right p-2 border font-semibold">
-                    {subtotal.toFixed(2)} DH
-                    </td>
-                </tr>
-                <tr>
-                    <td colSpan="4" className="text-right p-2 border font-semibold">
-                    TVA {invoiceData.taxRate}%
-                    </td>
-                    <td className="text-right p-2 border font-semibold">
-                    {taxAmount.toFixed(2)} DH
-                    </td>
-                </tr>
-                <tr>
-                    <td colSpan="4" className="text-right p-2 border font-semibold">
-                    Total
-                    </td>
-                    <td className="text-right p-2 border font-semibold">
-                    {total.toFixed(2)} DH
-                    </td>
-                </tr>
-                </tfoot>
-            </table>
-
-            {/* Montant en toutes lettres */}
-            <p className="text-right font-semibold">
-                Montant total en toutes lettres : {numberToWords(total)}
-            </p>
-
-            {/* Note */}
-            <div className="mt-5">
-                <p>
-                <strong>Note :</strong> {invoiceData.note}
-                </p>
-                <div className="mt-5 text-center border-t pt-2">
-                <p>{docStyle.footer}</p>
-                </div>
-            </div>
+            </main>
         </div>
-      </main>
-    </div>
-  );
+    );
 };
 
 export default Preview;

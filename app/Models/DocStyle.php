@@ -12,13 +12,10 @@ class DocStyle extends Model
     public $timestamps = false;
 
     protected $fillable = [
-        'layout',
-        'font',
-        'color1',
-        'color2',
-        'layout_bg',
-        'template_path',
-        'is_default',
+        'font_family',
+        'title_color',
+        'table_head_color',
+        'bg_color',
     ];
 
     public function invoices()

@@ -6,7 +6,6 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\UserController;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -28,10 +27,6 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/admin/create-invoice', [InvoiceController::class, 'create'])->name('admin.create-invoice');
     Route::post('/admin/create-invoice', [InvoiceController::class, 'store']);
 
-    Route::get('/admin/create-invoice/preview', function () {
-        return Inertia::render('InvoicePreview');
-    })->name('admin.preview');
-
     Route::get('/admin/create-user', [UserController::class, 'create'])->name('admin.create-user');
     Route::post('/admin/create-user', [UserController::class, 'store']);
 
@@ -41,11 +36,12 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/admin/create-product', [ProductController::class, 'create'])->name('admin.create-product');
     Route::post('/admin/create-product', [ProductController::class, 'store']);
 
-    Route::post('/admin/invoices/{id}/approve', [InvoiceController::class, 'approve'])->name('admin.invoices.approve');
-    Route::post('/admin/invoices/{id}/deny', [InvoiceController::class, 'deny'])->name('admin.invoices.deny');
     Route::get('/admin/invoices/{id}/edit', [InvoiceController::class, 'edit'])->name('admin.invoices.edit');
     Route::post('/admin/invoices/{id}/edit', [InvoiceController::class, 'update']);
     Route::delete('/admin/invoices/{id}/delete', [InvoiceController::class, 'destroy'])->name('admin.invoices.destroy');
+    Route::post('/admin/invoices/{id}/approve', [InvoiceController::class, 'approve'])->name('admin.invoices.approve');
+    Route::post('/admin/invoices/{id}/deny', [InvoiceController::class, 'deny'])->name('admin.invoices.deny');
+    Route::get('/admin/invoices/{id}/preview', [InvoiceController::class, 'show'])->name('admin.invoices.preview');
 
     Route::get('/admin/users/{id}/edit', [UserController::class, 'edit'])->name('admin.users.edit');
     Route::post('/admin/users/{id}/edit', [UserController::class, 'update']);
@@ -71,10 +67,6 @@ Route::middleware(['auth', 'role:salesman'])->group(function () {
     Route::get('/salesman/create-invoice', [InvoiceController::class, 'create'])->name('salesman.create-invoice');
     Route::post('/salesman/create-invoice', [InvoiceController::class, 'store']);
 
-    Route::get('/salesman/create-invoice/preview', function () {
-        return Inertia::render('InvoicePreview');
-    })->name('salesman.preview');
-
     Route::get('/salesman/create-user', [UserController::class, 'create'])->name('salesman.create-user');
     Route::post('/salesman/create-user', [UserController::class, 'store']);
 
@@ -84,11 +76,12 @@ Route::middleware(['auth', 'role:salesman'])->group(function () {
     Route::get('/salesman/create-product', [ProductController::class, 'create'])->name('salesman.create-product');
     Route::post('/salesman/create-product', [ProductController::class, 'store']);
 
-    Route::post('/salesman/invoices/{id}/approve', [InvoiceController::class, 'approve'])->name('salesman.invoices.approve');
-    Route::post('/salesman/invoices/{id}/deny', [InvoiceController::class, 'deny'])->name('salesman.invoices.deny');
     Route::get('/salesman/invoices/{id}/edit', [InvoiceController::class, 'edit'])->name('salesman.invoices.edit');
     Route::post('/salesman/invoices/{id}/edit', [InvoiceController::class, 'update']);
     Route::delete('/salesman/invoices/{id}/delete', [InvoiceController::class, 'destroy'])->name('salesman.invoices.destroy');
+    Route::post('/salesman/invoices/{id}/approve', [InvoiceController::class, 'approve'])->name('salesman.invoices.approve');
+    Route::post('/salesman/invoices/{id}/deny', [InvoiceController::class, 'deny'])->name('salesman.invoices.deny');
+    Route::get('/salesman/invoices/{id}/preview', [InvoiceController::class, 'show'])->name('salesman.invoices.preview');
 
     Route::get('/salesman/users/{id}/edit', [UserController::class, 'edit'])->name('salesman.users.edit');
     Route::post('/salesman/users/{id}/edit', [UserController::class, 'update']);
@@ -112,14 +105,10 @@ Route::middleware(['auth', 'role:accountant'])->group(function () {
     Route::get('/accountant/create-invoice', [InvoiceController::class, 'create'])->name('accountant.create-invoice');
     Route::post('/accountant/create-invoice', [InvoiceController::class, 'store']);
 
-    Route::get('/accountant/create-invoice/preview', function () {
-        return Inertia::render('InvoicePreview');
-    })->name('accountant.preview');
-
-    Route::post('/accountant/invoices/{id}/approve', [InvoiceController::class, 'approve'])->name('accountant.invoices.approve');
-    Route::post('/accountant/invoices/{id}/deny', [InvoiceController::class, 'deny'])->name('accountant.invoices.deny');
     Route::get('/accountant/invoices/{id}/edit', [InvoiceController::class, 'edit'])->name('accountant.invoices.edit');
     Route::post('/accountant/invoices/{id}/edit', [InvoiceController::class, 'update']);
     Route::delete('/accountant/invoices/{id}/delete', [InvoiceController::class, 'destroy'])->name('accountant.invoices.destroy');
-
+    Route::post('/accountant/invoices/{id}/approve', [InvoiceController::class, 'approve'])->name('accountant.invoices.approve');
+    Route::post('/accountant/invoices/{id}/deny', [InvoiceController::class, 'deny'])->name('accountant.invoices.deny');
+    Route::get('/accountant/invoices/{id}/preview', [InvoiceController::class, 'show'])->name('accountant.invoices.preview');
 });
