@@ -42,6 +42,7 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::post('/admin/invoices/{id}/approve', [InvoiceController::class, 'approve'])->name('admin.invoices.approve');
     Route::post('/admin/invoices/{id}/deny', [InvoiceController::class, 'deny'])->name('admin.invoices.deny');
     Route::get('/admin/invoices/{id}/preview', [InvoiceController::class, 'show'])->name('admin.invoices.preview');
+    Route::post('/admin/invoices/send-invoice', [InvoiceController::class, 'sendInvoice'])->name('admin.invoices.send-invoice');
 
     Route::get('/admin/users/{id}/edit', [UserController::class, 'edit'])->name('admin.users.edit');
     Route::post('/admin/users/{id}/edit', [UserController::class, 'update']);

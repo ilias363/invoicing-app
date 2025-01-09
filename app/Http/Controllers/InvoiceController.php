@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\InvoiceMail;
 use App\Models\Company;
 use App\Models\Customer;
 use App\Models\Invoice;
@@ -9,6 +10,7 @@ use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 use Inertia\Inertia;
 
 class InvoiceController extends Controller
@@ -137,7 +139,7 @@ class InvoiceController extends Controller
 
             $user = Auth::user();
 
-            return redirect()->route($user->role->name.'.invoices')->with('success', 'Invoice successfully created.');
+            return redirect()->route($user->role->name . '.invoices')->with('success', 'Invoice successfully created.');
         } catch (\Exception $e) {
             DB::rollBack();
             return redirect()->back()->with('error', 'Error creating the invoice.');
@@ -261,7 +263,7 @@ class InvoiceController extends Controller
             'products.*.quantity.integer' => 'The quantity must be a valid integer.',
             'products.*.quantity.min' => 'The quantity must be at least 1.',
         ]);
-        
+
         // dd($validatedData);
 
         DB::beginTransaction();
@@ -315,7 +317,7 @@ class InvoiceController extends Controller
 
             $user = Auth::user();
 
-            return redirect()->route($user->role->name.'.invoices')->with('success', 'Invoice successfully updated.');
+            return redirect()->route($user->role->name . '.invoices')->with('success', 'Invoice successfully updated.');
         } catch (\Exception $e) {
             DB::rollBack();
 
@@ -332,5 +334,19 @@ class InvoiceController extends Controller
         $invoice->delete();
 
         return redirect()->back()->with('success', 'Invoice deleted successfully.');
+    }
+
+    public function sendInvoice(Request $request)
+    {
+        $invoice_id = $request->invoice_id;
+        $email = $request->email;
+        $pdfBuffer = base64_decode($request->pdfBase64); // Decode PDF buffer
+        dd($pdfBuffer);
+        
+
+        // Send the email
+        Mail::to($email)->send(new InvoiceMail($invoice_id, $pdfBuffer));
+
+        return response()->json(['message' => 'Email sent successfully']);
     }
 }

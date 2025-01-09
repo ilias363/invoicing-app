@@ -1,7 +1,9 @@
 import React, { useState } from "react";
+import { router } from "@inertiajs/react";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 import { toWords } from "number-to-words";
+import FlashMessage from "./FlashMessage";
 
 const Preview = ({ company, invoice, docStyle, fonts }) => {
     const [titleColor, setTitleColor] = useState(docStyle.title_color);
@@ -10,7 +12,7 @@ const Preview = ({ company, invoice, docStyle, fonts }) => {
     const [backgroundColor, setBackgroundColor] = useState(docStyle.bg_color);
 
     // Generate PDF
-    const generatePDF = (buffer = false) => {
+    const generatePDF = (sendByEmail = false) => {
         const content = document.getElementById("invoice-preview");
         const options = { scale: 2 };
 
@@ -22,8 +24,8 @@ const Preview = ({ company, invoice, docStyle, fonts }) => {
                 const imgHeight = (canvas.height * imgWidth) / canvas.width;
 
                 pdf.addImage(imgData, "PNG", 0, 0, imgWidth, imgHeight);
-                buffer
-                    ? sendEmailToBackend(pdf.output("arraybuffer"))
+                sendByEmail
+                    ? sendEmailToBackend(pdf.output('datauristring'))
                     : pdf.save(
                           `INV-${invoice.id.toString().padStart(4, "0")}.pdf`
                       );
@@ -36,9 +38,12 @@ const Preview = ({ company, invoice, docStyle, fonts }) => {
             });
     };
 
-    const sendEmailToBackend = (pdfBuffer) => {
-        // Inertia.post("/send-invoice-email", { pdfBuffer, invoice: invoice });
-        console.log(pdfBuffer, " sent to backend");
+    const sendEmailToBackend = (pdfBase64) => {
+        router.post("/admin/invoices/send-invoice", {
+            pdfBase64: pdfBase64,
+            invoice_id: invoice.id,
+            email: invoice.customer.email,
+        });
     };
 
     // Calculate totals
@@ -129,6 +134,7 @@ const Preview = ({ company, invoice, docStyle, fonts }) => {
                 >
                     Send by Email
                 </button>
+                <FlashMessage />
             </aside>
 
             <main className="flex-1 p-6 ml-72">

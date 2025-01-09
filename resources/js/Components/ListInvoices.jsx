@@ -14,7 +14,7 @@ const ListInvoices = ({
     const [openInvoiceId, setOpenInvoiceId] = useState(null);
 
     const { auth } = usePage().props;
-    
+
     const makeUrlWithParams = (url) => {
         if (searchTerm !== null) url += "&search=" + searchTerm;
         if (sortBy !== null) url += "&sortBy=" + sortBy;
@@ -49,6 +49,10 @@ const ListInvoices = ({
 
     const handleEdit = (id) => {
         router.get(route(`${auth.user.role.name}.invoices.edit`, id));
+    };
+
+    const handlePreview = (id) => {
+        router.get(route(`${auth.user.role.name}.invoices.preview`, id));
     };
 
     const handleDelete = (id) => {
@@ -111,8 +115,10 @@ const ListInvoices = ({
                             {sortBy === "invoice_date" &&
                                 (sortDirection === "asc" ? "↑" : "↓")}
                         </th>
-                        {(auth.user.role.name === 'admin' || auth.user.role.name === 'accountant') && (
-                        <th className="border px-6 py-3">Actions</th>)}
+                        {(auth.user.role.name === "admin" ||
+                            auth.user.role.name === "accountant") && (
+                            <th className="border px-6 py-3">Actions</th>
+                        )}
                     </tr>
                 </thead>
                 <tbody>
@@ -161,73 +167,91 @@ const ListInvoices = ({
                             <td className="border px-6 py-4 text-gray-800">
                                 {invoice.invoice_date}
                             </td>
-                            {(auth.user.role.name === 'admin' || auth.user.role.name === 'accountant') && (
-                            <td className="border px-6 py-4 text-center">
-                                <button
-                                    onClick={() =>
-                                        toggleActionsMenu(invoice.id)
-                                    }
-                                    className="p-2 text-gray-600 hover:text-gray-800 focus:outline-none"
-                                >
-                                    <FaEllipsisH size={25} />
-                                </button>
-
-                                {openInvoiceId === invoice.id && (
-                                    <div
-                                        className="absolute right-0 mt-2 w-36 py-1 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5"
-                                        role="menu"
-                                        aria-orientation="vertical"
-                                        aria-labelledby="options-menu"
+                            {(auth.user.role.name === "admin" ||
+                                auth.user.role.name === "accountant") && (
+                                <td className="border px-6 py-4 text-center">
+                                    <button
+                                        onClick={() =>
+                                            toggleActionsMenu(invoice.id)
+                                        }
+                                        className="p-2 text-gray-600 hover:text-gray-800 focus:outline-none"
                                     >
-                                        <button
-                                            onClick={() => {
-                                                setOpenInvoiceId(null);
-                                                handleEdit(invoice.id);
-                                            }}
-                                            className="block w-full text-left px-3 py-1 text-sm text-gray-700 hover:bg-gray-100"
-                                            role="menuitem"
+                                        <FaEllipsisH size={25} />
+                                    </button>
+
+                                    {openInvoiceId === invoice.id && (
+                                        <div
+                                            className="absolute right-0 mt-2 w-36 py-1 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5"
+                                            role="menu"
+                                            aria-orientation="vertical"
+                                            aria-labelledby="options-menu"
                                         >
-                                            Edit
-                                        </button>
-                                        <button
-                                            onClick={() => {
-                                                setOpenInvoiceId(null);
-                                                handleDelete(invoice.id);
-                                            }}
-                                            className="block w-full text-left px-3 py-1 text-sm text-gray-700 hover:bg-gray-100"
-                                            role="menuitem"
-                                        >
-                                            Delete
-                                        </button>
-                                        {invoice.status === "pending" && (
-                                            <>
-                                                <button
-                                                    onClick={() => {
-                                                        setOpenInvoiceId(null);
-                                                        handleApprove(
-                                                            invoice.id
-                                                        );
-                                                    }}
-                                                    className="block w-full text-left px-3 py-1 text-sm text-gray-700 hover:bg-gray-100"
-                                                    role="menuitem"
-                                                >
-                                                    Approve
-                                                </button>
-                                                <button
-                                                    onClick={() => {
-                                                        setOpenInvoiceId(null);
-                                                        handleDeny(invoice.id);
-                                                    }}
-                                                    className="block w-full text-left px-3 py-1 text-sm text-gray-700 hover:bg-gray-100"
-                                                    role="menuitem"
-                                                >
-                                                    Deny
-                                                </button>
-                                            </>
-                                        )}
-                                    </div>
-                                )}
-                            </td>)}
+                                            <button
+                                                onClick={() => {
+                                                    setOpenInvoiceId(null);
+                                                    handlePreview(invoice.id);
+                                                }}
+                                                className="block w-full text-left px-3 py-1 text-sm text-gray-700 hover:bg-gray-100"
+                                                role="menuitem"
+                                            >
+                                                Preview
+                                            </button>
+                                            <button
+                                                onClick={() => {
+                                                    setOpenInvoiceId(null);
+                                                    handleEdit(invoice.id);
+                                                }}
+                                                className="block w-full text-left px-3 py-1 text-sm text-gray-700 hover:bg-gray-100"
+                                                role="menuitem"
+                                            >
+                                                Edit
+                                            </button>
+                                            <button
+                                                onClick={() => {
+                                                    setOpenInvoiceId(null);
+                                                    handleDelete(invoice.id);
+                                                }}
+                                                className="block w-full text-left px-3 py-1 text-sm text-gray-700 hover:bg-gray-100"
+                                                role="menuitem"
+                                            >
+                                                Delete
+                                            </button>
+                                            {invoice.status === "pending" && (
+                                                <>
+                                                    <button
+                                                        onClick={() => {
+                                                            setOpenInvoiceId(
+                                                                null
+                                                            );
+                                                            handleApprove(
+                                                                invoice.id
+                                                            );
+                                                        }}
+                                                        className="block w-full text-left px-3 py-1 text-sm text-gray-700 hover:bg-gray-100"
+                                                        role="menuitem"
+                                                    >
+                                                        Approve
+                                                    </button>
+                                                    <button
+                                                        onClick={() => {
+                                                            setOpenInvoiceId(
+                                                                null
+                                                            );
+                                                            handleDeny(
+                                                                invoice.id
+                                                            );
+                                                        }}
+                                                        className="block w-full text-left px-3 py-1 text-sm text-gray-700 hover:bg-gray-100"
+                                                        role="menuitem"
+                                                    >
+                                                        Deny
+                                                    </button>
+                                                </>
+                                            )}
+                                        </div>
+                                    )}
+                                </td>
+                            )}
                         </tr>
                     ))}
                 </tbody>
