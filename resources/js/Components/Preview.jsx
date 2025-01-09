@@ -25,7 +25,7 @@ const Preview = ({ company, invoice, docStyle, fonts }) => {
 
                 pdf.addImage(imgData, "PNG", 0, 0, imgWidth, imgHeight);
                 sendByEmail
-                    ? sendEmailToBackend(pdf.output('datauristring'))
+                    ? sendEmailToBackend(pdf.output("datauristring"))
                     : pdf.save(
                           `INV-${invoice.id.toString().padStart(4, "0")}.pdf`
                       );
@@ -42,6 +42,8 @@ const Preview = ({ company, invoice, docStyle, fonts }) => {
         router.post("/admin/invoices/send-invoice", {
             pdfBase64: pdfBase64,
             invoice_id: invoice.id,
+            customer_name:
+                invoice.customer.last_name + " " + invoice.customer.first_name,
             email: invoice.customer.email,
         });
     };
@@ -130,14 +132,14 @@ const Preview = ({ company, invoice, docStyle, fonts }) => {
                 </button>
                 <button
                     onClick={() => generatePDF(true)}
-                    className="mt-4 px-4 py-2 bg-[#2A2A2A] text-white rounded hover:bg-blue-700"
+                    className="my-4 px-4 py-2 bg-[#2A2A2A] text-white rounded hover:bg-blue-700"
                 >
                     Send by Email
                 </button>
-                <FlashMessage />
             </aside>
 
             <main className="flex-1 p-6 ml-72">
+                <FlashMessage />
                 <h1 className="text-3xl text-center font-bold mb-4 underline">
                     Invoice Preview
                 </h1>

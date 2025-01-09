@@ -400,14 +400,31 @@ class InvoiceController extends Controller
     public function sendInvoice(Request $request)
     {
         $invoice_id = $request->invoice_id;
+        $customer_name = $request->customer_name;
         $email = $request->email;
-        $pdfBuffer = base64_decode($request->pdfBase64); // Decode PDF buffer
-        dd($pdfBuffer);
+        $pdfBase64 = $request->pdfBase64;
+
+        if (!$pdfBase64) {
+            return redirect()->back()->with('error', 'No PDF data provided.');
+        }
+    
+        // Remove the base64 prefix if present
+        if (str_contains($pdfBase64, 'base64,')) {
+            $pdfBase64 = explode('base64,', $pdfBase64)[1];
+        }
         
-
-        // Send the email
-        Mail::to($email)->send(new InvoiceMail($invoice_id, $pdfBuffer));
-
-        return response()->json(['message' => 'Email sent successfully']);
+        try {
+            $pdfBuffer = base64_decode($pdfBase64);
+            
+            if ($pdfBuffer === false) {
+                return redirect()->back()->with('error', 'Failed to decode PDF.');
+            }
+            
+            Mail::to($email)->send(new InvoiceMail($invoice_id, $customer_name, $pdfBuffer));
+    
+            return redirect()->back()->with('success', 'Email sent successfully.');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'An error occurred: ' . $e->getMessage());
+        }
     }
 }
