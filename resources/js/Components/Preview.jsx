@@ -14,7 +14,7 @@ const Preview = ({ company, invoice, docStyle, fonts }) => {
     // Generate PDF
     const generatePDF = (sendByEmail = false) => {
         const content = document.getElementById("invoice-preview");
-        const options = { scale: 2 };
+        const options = { scale: sendByEmail ? 1 : 3 };
 
         html2canvas(content, options)
             .then((canvas) => {
