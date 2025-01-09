@@ -1,15 +1,17 @@
 import Header from "@/Components/Header";
 import ListProducts from "@/Components/ListProducts";
 import SubHeader from "@/Components/SubHeader";
-import { router } from "@inertiajs/react";
+import { router, usePage } from "@inertiajs/react";
 
 const Products = ({ productsData, searchTerm, sortBy, sortDirection }) => {
     const handleSearchSubmit = (search) => {
-        router.get(route("admin.products"), { search, sortBy, sortDirection });
+        router.get(route(`${auth.user.role.name}.products`), { search, sortBy, sortDirection });
     };
 
+    const { auth } = usePage().props;
+
     const handleSortChange = (sortBy, sortDirection) => {
-        router.get(route("admin.products"), {
+        router.get(route(`${auth.user.role.name}.products`), {
             search: searchTerm,
             sortBy,
             sortDirection,
@@ -24,7 +26,7 @@ const Products = ({ productsData, searchTerm, sortBy, sortDirection }) => {
                 placeholder={"Search by Name, Category"}
                 onSearchSubmit={handleSearchSubmit}
                 search={searchTerm}
-                createLink={"/admin/create-product"}
+                createLink={`/${auth.user.role.name}/create-product`}
             />
             <ListProducts
                 products={productsData.original.data}

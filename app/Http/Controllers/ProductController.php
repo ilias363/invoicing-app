@@ -27,7 +27,7 @@ class ProductController extends Controller
             ->orderBy($sortBy, $sortDirection)
             ->paginate(6);
 
-        return Inertia::render('Admin/Products', [
+        return Inertia::render('Products', [
             'productsData' => response()->json($products),
             'searchTerm' => $search,
             'sortBy' => $sortBy,
@@ -40,7 +40,7 @@ class ProductController extends Controller
      */
     public function create()
     {
-        return Inertia::render('Admin/CreateProduct');
+        return Inertia::render('CreateProduct');
     }
 
     /**
@@ -77,8 +77,9 @@ class ProductController extends Controller
             ]);
 
             DB::commit();
+            $user = Auth::user();
 
-            return redirect()->route('admin.products')->with('success', 'Product created successfully!');
+            return redirect()->route($user->role->name.'.products')->with('success', 'Product successfully created.');
         } catch (\Exception $e) {
             DB::rollBack();
 
@@ -101,7 +102,7 @@ class ProductController extends Controller
     {
         $productToEdit = Product::find($id);
 
-        return inertia('Admin/UpdateProduct', [
+        return inertia('UpdateProduct', [
             'productToEdit' => $productToEdit,
         ]);
     }
@@ -140,7 +141,9 @@ class ProductController extends Controller
 
             DB::commit();
 
-            return redirect()->route('admin.products')->with('success', 'Product updated successfully!');
+            $user = Auth::user();
+
+            return redirect()->route($user->role->name.'.products')->with('success', 'Product successfully updated.');
         } catch (\Exception $e) {
             DB::rollBack();
 

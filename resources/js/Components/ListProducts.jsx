@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { FaEllipsisH } from "react-icons/fa";
-import { router } from "@inertiajs/react";
+import { router, usePage } from "@inertiajs/react";
 import FlashMessage from "./FlashMessage";
 
 const ListProducts = ({
@@ -12,6 +12,8 @@ const ListProducts = ({
     sortDirection,
 }) => {
     const [openProductId, setOpenProductId] = useState(null);
+
+    const { auth } = usePage().props;
 
     const makeUrlWithParams = (url) => {
         if (searchTerm !== null) url += "&search=" + searchTerm;
@@ -147,12 +149,13 @@ const ListProducts = ({
                                     >
                                         <div className="py-1">
                                             <a
-                                                href={`/admin/products/${product.id}/edit`}
+                                                href={`/${auth.user.role.name}/products/${product.id}/edit`}
                                                 className="block px-3 py-1 text-sm text-gray-700 hover:bg-gray-100"
                                                 role="menuitem"
                                             >
                                                 Edit
                                             </a>
+                                            {(auth.user.role.name === 'admin') && (
                                             <a
                                                 onClick={() => {
                                                     handleDelete(product.id);
@@ -161,7 +164,7 @@ const ListProducts = ({
                                                 role="menuitem"
                                             >
                                                 Delete
-                                            </a>
+                                            </a>)}
                                         </div>
                                     </div>
                                 )}

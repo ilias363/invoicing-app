@@ -1,5 +1,5 @@
 import React from "react";
-import { useForm } from "@inertiajs/react";
+import { useForm, usePage } from "@inertiajs/react";
 
 const CustomerForm = ({ customer_data, toCreate }) => {
   const { data, setData, post, errors, processing } = useForm(customer_data);
@@ -9,9 +9,11 @@ const CustomerForm = ({ customer_data, toCreate }) => {
     setData(name, value);
   };
 
+  const { auth } = usePage().props;
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    toCreate ? post("/admin/create-customer") : post(`/admin/customers/${customer_data.customer_id}/edit`);
+    toCreate ? post(`/${auth.user.role.name}/create-customer`) : post(`/${auth.user.role.name}/customers/${customer_data.customer_id}/edit`);
   };
 
   return (

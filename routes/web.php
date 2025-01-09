@@ -63,13 +63,9 @@ Route::middleware(['auth', 'role:salesman'])->group(function () {
     Route::get('/salesman/invoices', [InvoiceController::class, 'index'])->name('salesman.invoices');
     Route::get('/salesman/products', [ProductController::class, 'index'])->name('salesman.products');
     Route::get('/salesman/customers', [CustomerController::class, 'index'])->name('salesman.customers');
-    Route::get('/salesman/users', [UserController::class, 'index'])->name('salesman.users');
 
     Route::get('/salesman/create-invoice', [InvoiceController::class, 'create'])->name('salesman.create-invoice');
     Route::post('/salesman/create-invoice', [InvoiceController::class, 'store']);
-
-    Route::get('/salesman/create-user', [UserController::class, 'create'])->name('salesman.create-user');
-    Route::post('/salesman/create-user', [UserController::class, 'store']);
 
     Route::get('/salesman/create-customer', [CustomerController::class, 'create'])->name('salesman.create-customer');
     Route::post('/salesman/create-customer', [CustomerController::class, 'store']);
@@ -79,22 +75,13 @@ Route::middleware(['auth', 'role:salesman'])->group(function () {
 
     Route::get('/salesman/invoices/{id}/edit', [InvoiceController::class, 'edit'])->name('salesman.invoices.edit');
     Route::post('/salesman/invoices/{id}/edit', [InvoiceController::class, 'update']);
-    Route::delete('/salesman/invoices/{id}/delete', [InvoiceController::class, 'destroy'])->name('salesman.invoices.destroy');
-    Route::post('/salesman/invoices/{id}/approve', [InvoiceController::class, 'approve'])->name('salesman.invoices.approve');
-    Route::post('/salesman/invoices/{id}/deny', [InvoiceController::class, 'deny'])->name('salesman.invoices.deny');
     Route::get('/salesman/invoices/{id}/preview', [InvoiceController::class, 'show'])->name('salesman.invoices.preview');
-
-    Route::get('/salesman/users/{id}/edit', [UserController::class, 'edit'])->name('salesman.users.edit');
-    Route::post('/salesman/users/{id}/edit', [UserController::class, 'update']);
-    Route::delete('/salesman/users/{id}/delete', [UserController::class, 'destroy'])->name('salesman.users.destroy');
 
     Route::get('/salesman/customers/{id}/edit', [CustomerController::class, 'edit'])->name('salesman.customers.edit');
     Route::post('/salesman/customers/{id}/edit', [CustomerController::class, 'update']);
-    Route::delete('/salesman/customers/{id}/delete', [CustomerController::class, 'destroy'])->name('salesman.customers.destroy');
 
     Route::get('/salesman/products/{id}/edit', [ProductController::class, 'edit'])->name('salesman.products.edit');
     Route::post('/salesman/products/{id}/edit', [ProductController::class, 'update']);
-    Route::delete('/salesman/products/{id}/delete', [ProductController::class, 'destroy'])->name('salesman.products.destroy');
 });
 
 Route::middleware(['auth', 'role:accountant'])->group(function () {

@@ -9,7 +9,7 @@ const LogsBox = ({ logs,roles }) => {
   .sort((a, b) => new Date(b.time_action) - new Date(a.time_action));
 
   return (
-    <div className="p-4 bg-gray-100 shadow-md h-[548px]">
+    <div className="p-4 bg-gray-100 shadow-md h-[548px] border-l-8 border-[#2A2A2A]">
       <h2 className="text-lg font-bold text-[#2A2A2A] mb-3">Recent Activity</h2>
       <div className="h-[470px] overflow-y-auto bg-white p-3 rounded-lg border border-gray-300">
         {recentLogs.length === 0 ? (

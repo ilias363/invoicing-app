@@ -78,6 +78,8 @@ class CustomerController extends Controller
                 'address' => $validatedData['address'],
                 'email' => $validatedData['email'],
             ]);
+
+            DB::commit();
     
             $user = Auth::user();
 
@@ -142,6 +144,8 @@ class CustomerController extends Controller
             $customer->address = $validatedData['address'];
 
             $customer->save();
+
+            DB::commit();
 
             $user = Auth::user();
 

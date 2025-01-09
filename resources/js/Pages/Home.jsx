@@ -54,11 +54,11 @@ const Home = ({ logs, invoicesData, roles }) => {
     return (
         <div className="min-h-screen flex flex-col items-center bg-gradient-to-r bg-[#DCDCDC]">
             <Header></Header>
-            <div className="flex flex-row items-center justify-center space-x-1">
-                <div className="p-6 mt-6">
+            <div className="flex flex-row items-center justify-center space-x-1 ">
+                <div className="p-6 mt-1">
                     <LogsBox logs={logs.original} roles={roles.original} />
                 </div>
-                <div className="flex items-center justify-center bg-white mt-6 shadow-md  border-r-8 border-[#2A2A2A]">
+                <div className="flex items-center justify-center bg-white mt-1 shadow-md  border-r-8 border-[#2A2A2A]">
                     <Histogram data={invoicePaymentStatus} />
                     <InvoiceSummary
                         totalInvoices={invoicesData.original.length}

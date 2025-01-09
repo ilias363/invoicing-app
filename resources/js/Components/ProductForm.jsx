@@ -1,5 +1,5 @@
 import React from "react";
-import { useForm } from "@inertiajs/react";
+import { useForm, usePage } from "@inertiajs/react";
 import FlashMessage from "./FlashMessage";
 
 const ProductForm = ({ product_data, toCreate }) => {
@@ -10,11 +10,13 @@ const ProductForm = ({ product_data, toCreate }) => {
     setData(name, value);
   };
 
+  const { auth } = usePage().props;
+
   const handleSubmit = (e) => {
     e.preventDefault();
     toCreate
-      ? post("/admin/create-product")
-      : post(`/admin/products/${product_data.id}/edit`);
+      ? post(`/${auth.user.role.name}/create-product`)
+      : post(`/${auth.user.role.name}/products/${product_data.id}/edit`);
   };
 
   return (
