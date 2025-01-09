@@ -1,7 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { useForm } from "@inertiajs/react";
+import FlashMessage from "./FlashMessage";
 
-const InvoiceForm = ({ customersData, productsData, taxRate }) => {
+const InvoiceForm = ({
+    invoice_data = null,
+    customersData,
+    productsData,
+    taxRate,
+    toCreate,
+}) => {
     productsData = productsData.map((product) => ({
         ...product,
         quantity: 1,
@@ -13,26 +20,25 @@ const InvoiceForm = ({ customersData, productsData, taxRate }) => {
     const [searchCustomerTerm, setSearchCustomerTerm] = useState("");
     const [openSearchCustomer, setOpenSearchCustomer] = useState(false);
 
-    useEffect(() => {
-        const today = new Date();
-        const todayFormatted = today.toISOString().split("T")[0];
-
-        const due = new Date(today);
-        due.setDate(due.getDate() + 7);
-        const dueFormatted = due.toISOString().split("T")[0];
-
-        setData("invoice_date", todayFormatted);
-        setData("due_date", dueFormatted);
-    }, []);
-
-    const { data, setData, post, errors, setError } = useForm({
-        customer_id: null,
-        invoice_date: "",
-        due_date: "",
-        payment_method: "Credit Card",
-        notes: "",
-        products: [],
-    });
+    const { data, setData, post, errors, setError } = useForm(
+        toCreate
+            ? {
+                  customer_id: null,
+                  invoice_date: "",
+                  due_date: "",
+                  payment_method: "Credit Card",
+                  notes: "",
+                  products: [],
+              }
+            : {
+                  customer_id: invoice_data.customer_id,
+                  invoice_date: invoice_data.invoice_date,
+                  due_date: invoice_data.due_date,
+                  payment_method: invoice_data.payment_method,
+                  notes: invoice_data.notes,
+                  products: [],
+              }
+    );
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -56,7 +62,7 @@ const InvoiceForm = ({ customersData, productsData, taxRate }) => {
             data.products.forEach((product) => {
                 if (!product.quantity || product.quantity < 1) {
                     errors.products = "Quantity must be at least 1.";
-                } else if (product.quantity > product.stock_quantity) {
+                } else if (toCreate && product.quantity > product.stock_quantity) {
                     errors.products = `The quantity for product ${product.name} must not exceed the stock quantity (${product.stock_quantity}).`;
                 }
             });
@@ -68,7 +74,7 @@ const InvoiceForm = ({ customersData, productsData, taxRate }) => {
         setError(errors);
 
         if (Object.keys(errors).length === 0) {
-            post("/admin/create-invoice");
+            toCreate ? post("/admin/create-invoice") : post(`/admin/invoices/${invoice_data.id}/edit`);
         }
     };
 
@@ -131,11 +137,57 @@ const InvoiceForm = ({ customersData, productsData, taxRate }) => {
             .includes(searchCustomerTerm.toLowerCase())
     );
 
+    useEffect(() => {
+        if (toCreate) {
+            const today = new Date();
+            const todayFormatted = today.toISOString().split("T")[0];
+
+            const due = new Date(today);
+            due.setDate(due.getDate() + 7);
+            const dueFormatted = due.toISOString().split("T")[0];
+
+            setData("invoice_date", todayFormatted);
+            setData("due_date", dueFormatted);
+        } else {
+            const invoiceCustomer = customersData.find(
+                (customer) => customer.id === invoice_data.customer_id
+            );
+
+            if (invoiceCustomer) {
+                setSearchCustomerTerm(
+                    `${invoiceCustomer.first_name} ${invoiceCustomer.last_name}`
+                );
+                setAddress(invoiceCustomer.address);
+            }
+
+            const matchingProducts = productsData
+                .filter((product) =>
+                    invoice_data.products.some(
+                        (invoiceProduct) => invoiceProduct.id === product.id
+                    )
+                )
+                .map((product) => {
+                    const matchingInvoiceProduct = invoice_data.products.find(
+                        (invoiceProduct) => invoiceProduct.id === product.id
+                    );
+                    return {
+                        ...product,
+                        quantity: matchingInvoiceProduct.quantity,
+                    };
+                });
+
+            
+            setData("products", matchingProducts);
+            setProducts(matchingProducts);
+        }
+    }, []);
+
     return (
         <form
             onSubmit={handleSubmit}
             className="flex flex-col bg-white p-6 shadow-lg m-4 w-full"
         >
+            <FlashMessage />
             <div className="flex flex-row justify-between mb-6">
                 {/* Customer Information */}
                 <div>
@@ -397,9 +449,6 @@ const InvoiceForm = ({ customersData, productsData, taxRate }) => {
             {errors.notes && (
                 <span className="text-sm text-red-600">{errors.notes}</span>
             )}
-            {errors.creation && (
-                <span className="text-xl text-red-600">{errors.creation}</span>
-            )}
 
             {/* Totals */}
             <div className="grid grid-cols-2 gap-6 mt-4">
@@ -432,7 +481,7 @@ const InvoiceForm = ({ customersData, productsData, taxRate }) => {
                     type="submit"
                     className="px-4 py-2 bg-[#2A2A2A] text-white rounded"
                 >
-                    Create
+                    {toCreate ? "Create" : "Save"}
                 </button>
             </div>
         </form>
