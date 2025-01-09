@@ -139,6 +139,20 @@ class InvoiceController extends Controller
 
             $user = Auth::user();
 
+            // Prepare log data
+            $logData = new Request([
+                'time_action' => now(),
+                'action' => 'Invoice number '.$invoice->id.' CREATED by ' . $user->role->name . ' ' . $user->last_name.' '.$user->first_name,
+                'user_id' => $user->id,
+                'invoice_id' => $invoice->id,
+            ]);
+
+            // Call the LogController's store method
+            $logController = new LogController();
+            $logController->store($logData);
+
+            
+
             return redirect()->route($user->role->name . '.invoices')->with('success', 'Invoice successfully created.');
         } catch (\Exception $e) {
             DB::rollBack();
@@ -157,6 +171,19 @@ class InvoiceController extends Controller
         $invoice->status = 'approved';
         $invoice->save();
 
+        $user = Auth::user();
+        // Prepare log data
+        $logData = new Request([
+            'time_action' => now(),
+            'action' => 'Invoice number '.$invoice->id.' APPROVED by ' . $user->role->name . ' ' . $user->last_name.' '.$user->first_name,
+            'user_id' => $user->id,
+            'invoice_id' => $invoice->id,
+        ]);
+
+        // Call the LogController's store method
+        $logController = new LogController();
+        $logController->store($logData);
+
         return redirect()->back()->with('success', 'Invoice approved successfully.');
     }
 
@@ -170,6 +197,19 @@ class InvoiceController extends Controller
 
         $invoice->status = 'denied';
         $invoice->save();
+
+        $user = Auth::user();
+        // Prepare log data
+        $logData = new Request([
+            'time_action' => now(),
+            'action' => 'Invoice number '.$invoice->id.' DENIED by ' . $user->role->name . ' ' . $user->last_name.' '.$user->first_name,
+            'user_id' => $user->id,
+            'invoice_id' => $invoice->id,
+        ]);
+
+        // Call the LogController's store method
+        $logController = new LogController();
+        $logController->store($logData);
 
         return redirect()->back()->with('success', 'Invoice denied successfully.');
     }
@@ -189,7 +229,7 @@ class InvoiceController extends Controller
             ])->findOrFail($id);
             $docStyle = $invoice->doc_style ?? [
                 'font_family' => 'Lato, sans-serif',
-                'title_color' => '#5C3D64',
+                'title_color' => '#2A2A2A',
                 'table_head_color' => '#000000',
                 'bg_color' => '#ffffff'
             ];
@@ -316,7 +356,16 @@ class InvoiceController extends Controller
             DB::commit();
 
             $user = Auth::user();
-
+            // Prepare log data
+            $logData = new Request([
+                'time_action' => now(),
+                'action' => 'Invoice number '.$invoice->id.' UPDATED by ' . $user->role->name . ' ' . $user->last_name.' '.$user->first_name,
+                'user_id' => $user->id,
+                'invoice_id' => $invoice->id,
+            ]);
+    
+            $logController = new LogController();
+            $logController->store($logData);
             return redirect()->route($user->role->name . '.invoices')->with('success', 'Invoice successfully updated.');
         } catch (\Exception $e) {
             DB::rollBack();
@@ -333,6 +382,18 @@ class InvoiceController extends Controller
         $invoice = Invoice::find($id);
         $invoice->delete();
 
+        $user = Auth::user();
+        // Prepare log data
+        $logData = new Request([
+            'time_action' => now(),
+            'action' => 'Invoice number '.$invoice->id.' DELETED by ' . $user->role->name . ' ' . $user->last_name.' '.$user->first_name,
+            'user_id' => $user->id,
+            'invoice_id' => $invoice->id,
+        ]);
+
+        // Call the LogController's store method
+        $logController = new LogController();
+        $logController->store($logData);
         return redirect()->back()->with('success', 'Invoice deleted successfully.');
     }
 
