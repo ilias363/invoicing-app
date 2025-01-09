@@ -1,7 +1,10 @@
+import { usePage } from "@inertiajs/react";
 import React, { useState } from "react";
 
 const SubHeader = ({ title, placeholder, onSearchSubmit, search, createLink }) => {
     const [searchTerm, setSearchTerm] = useState(search);
+
+    const { auth } = usePage().props;
 
     const handleInputChange = (e) => {
         setSearchTerm(e.target.value);
@@ -42,12 +45,13 @@ const SubHeader = ({ title, placeholder, onSearchSubmit, search, createLink }) =
                 </form>
                 
                 {/* Create Invoice Button */}
+                {(auth.user.role.name === 'admin' || auth.user.role.name === 'salesman') && (
                 <a
                     href={createLink}
                     className="bg-gray-300 text-gray-800 py-2 px-4 rounded-md hover:bg-gray-400 focus:outline-none"
                 >
                     Create {title}
-                </a>
+                </a>)}
             </div>
         </div>
     );

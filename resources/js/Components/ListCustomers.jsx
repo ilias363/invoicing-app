@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { FaEllipsisH } from "react-icons/fa";
-import { router } from "@inertiajs/react";
+import { router, usePage } from "@inertiajs/react";
 import FlashMessage from "./FlashMessage";
+
 
 const ListCustomers = ({
     customers,
@@ -13,6 +14,8 @@ const ListCustomers = ({
 }) => {
     const [openCustomerId, setOpenCustomerId] = useState(null);
 
+    const { auth } = usePage().props;
+
     const makeUrlWithParams = (url) => {
         if (searchTerm !== null) url += "&search=" + searchTerm;
         if (sortBy !== null) url += "&sortBy=" + sortBy;
@@ -23,7 +26,7 @@ const ListCustomers = ({
 
     const handleDelete = (id) => {
         if (confirm("Are you sure you want to delete this customer?")) {
-            router.delete(route("admin.customers.destroy", id));
+            router.delete(route(`${auth.user.role.name}.customers.destroy`, id));
         }
     };
 
@@ -89,7 +92,8 @@ const ListCustomers = ({
                             {sortBy === "address" &&
                                 (sortDirection === "asc" ? "↑" : "↓")}
                         </th>
-                        <th className="border px-6 py-3">Actions</th>
+                        {(auth.user.role.name === 'admin' || auth.user.role.name === 'salesman') && (
+                        <th className="border px-6 py-3">Actions</th>)}
                     </tr>
                 </thead>
                 <tbody>
@@ -113,6 +117,7 @@ const ListCustomers = ({
                             <td className="border px-6 py-4 text-gray-800">
                                 {customer.address}
                             </td>
+                            {(auth.user.role.name === 'admin' || auth.user.role.name === 'salesman') && (
                             <td className="border px-6 py-4 text-center">
                                 <button
                                     onClick={() =>
@@ -132,12 +137,13 @@ const ListCustomers = ({
                                     >
                                         <div className="py-1">
                                             <a
-                                                href={`/admin/customers/${customer.id}/edit`}
+                                                href={`/${auth.user.role.name}/customers/${customer.id}/edit`}
                                                 className="block px-3 py-1 text-sm text-gray-700 hover:bg-gray-100"
                                                 role="menuitem"
                                             >
                                                 Edit
                                             </a>
+                                            {(auth.user.role.name === 'admin') && (
                                             <a
                                                 onClick={() => {
                                                     handleDelete(customer.id);
@@ -146,11 +152,11 @@ const ListCustomers = ({
                                                 role="menuitem"
                                             >
                                                 Delete
-                                            </a>
+                                            </a>)}
                                         </div>
                                     </div>
                                 )}
-                            </td>
+                            </td>)}
                         </tr>
                     ))}
                 </tbody>

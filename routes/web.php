@@ -29,7 +29,7 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::post('/admin/create-invoice', [InvoiceController::class, 'store']);
 
     Route::get('/admin/create-invoice/preview', function () {
-        return Inertia::render('Admin/InvoicePreview');
+        return Inertia::render('InvoicePreview');
     })->name('admin.preview');
 
     Route::get('/admin/create-user', [UserController::class, 'create'])->name('admin.create-user');
@@ -61,13 +61,65 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
 });
 
 Route::middleware(['auth', 'role:salesman'])->group(function () {
-    Route::get('/salesman/dashboard', function () {
-        return Inertia::render('SalesMan/Home');
-    })->name('salesman.home');
+    Route::get('/salesman/dashboard', [DashboardController::class, 'index'])->name('salesman.home');
+
+    Route::get('/salesman/invoices', [InvoiceController::class, 'index'])->name('salesman.invoices');
+    Route::get('/salesman/products', [ProductController::class, 'index'])->name('salesman.products');
+    Route::get('/salesman/customers', [CustomerController::class, 'index'])->name('salesman.customers');
+    Route::get('/salesman/users', [UserController::class, 'index'])->name('salesman.users');
+
+    Route::get('/salesman/create-invoice', [InvoiceController::class, 'create'])->name('salesman.create-invoice');
+    Route::post('/salesman/create-invoice', [InvoiceController::class, 'store']);
+
+    Route::get('/salesman/create-invoice/preview', function () {
+        return Inertia::render('InvoicePreview');
+    })->name('salesman.preview');
+
+    Route::get('/salesman/create-user', [UserController::class, 'create'])->name('salesman.create-user');
+    Route::post('/salesman/create-user', [UserController::class, 'store']);
+
+    Route::get('/salesman/create-customer', [CustomerController::class, 'create'])->name('salesman.create-customer');
+    Route::post('/salesman/create-customer', [CustomerController::class, 'store']);
+
+    Route::get('/salesman/create-product', [ProductController::class, 'create'])->name('salesman.create-product');
+    Route::post('/salesman/create-product', [ProductController::class, 'store']);
+
+    Route::post('/salesman/invoices/{id}/approve', [InvoiceController::class, 'approve'])->name('salesman.invoices.approve');
+    Route::post('/salesman/invoices/{id}/deny', [InvoiceController::class, 'deny'])->name('salesman.invoices.deny');
+    Route::get('/salesman/invoices/{id}/edit', [InvoiceController::class, 'edit'])->name('salesman.invoices.edit');
+    Route::post('/salesman/invoices/{id}/edit', [InvoiceController::class, 'update']);
+    Route::delete('/salesman/invoices/{id}/delete', [InvoiceController::class, 'destroy'])->name('salesman.invoices.destroy');
+
+    Route::get('/salesman/users/{id}/edit', [UserController::class, 'edit'])->name('salesman.users.edit');
+    Route::post('/salesman/users/{id}/edit', [UserController::class, 'update']);
+    Route::delete('/salesman/users/{id}/delete', [UserController::class, 'destroy'])->name('salesman.users.destroy');
+
+    Route::get('/salesman/customers/{id}/edit', [CustomerController::class, 'edit'])->name('salesman.customers.edit');
+    Route::post('/salesman/customers/{id}/edit', [CustomerController::class, 'update']);
+    Route::delete('/salesman/customers/{id}/delete', [CustomerController::class, 'destroy'])->name('salesman.customers.destroy');
+
+    Route::get('/salesman/products/{id}/edit', [ProductController::class, 'edit'])->name('salesman.products.edit');
+    Route::post('/salesman/products/{id}/edit', [ProductController::class, 'update']);
+    Route::delete('/salesman/products/{id}/delete', [ProductController::class, 'destroy'])->name('salesman.products.destroy');
 });
 
 Route::middleware(['auth', 'role:accountant'])->group(function () {
-    Route::get('/accountant/dashboard', function () {
-        return Inertia::render('Accountant/Home');
-    })->name('accountant.home');
+    Route::get('/accountant/dashboard', [DashboardController::class, 'index'])->name('accountant.home');
+
+    Route::get('/accountant/invoices', [InvoiceController::class, 'index'])->name('accountant.invoices');
+    Route::get('/accountant/customers', [CustomerController::class, 'index'])->name('accountant.customers');
+
+    Route::get('/accountant/create-invoice', [InvoiceController::class, 'create'])->name('accountant.create-invoice');
+    Route::post('/accountant/create-invoice', [InvoiceController::class, 'store']);
+
+    Route::get('/accountant/create-invoice/preview', function () {
+        return Inertia::render('InvoicePreview');
+    })->name('accountant.preview');
+
+    Route::post('/accountant/invoices/{id}/approve', [InvoiceController::class, 'approve'])->name('accountant.invoices.approve');
+    Route::post('/accountant/invoices/{id}/deny', [InvoiceController::class, 'deny'])->name('accountant.invoices.deny');
+    Route::get('/accountant/invoices/{id}/edit', [InvoiceController::class, 'edit'])->name('accountant.invoices.edit');
+    Route::post('/accountant/invoices/{id}/edit', [InvoiceController::class, 'update']);
+    Route::delete('/accountant/invoices/{id}/delete', [InvoiceController::class, 'destroy'])->name('accountant.invoices.destroy');
+
 });

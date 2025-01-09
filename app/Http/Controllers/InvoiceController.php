@@ -41,7 +41,7 @@ class InvoiceController extends Controller
             })
             ->paginate(8);
 
-        return Inertia::render('Admin/Invoices', [
+        return Inertia::render('Invoices', [
             'invoicesData' => response()->json($invoices),
             'searchTerm' => $search,
             'sortBy' => $sortBy,
@@ -59,7 +59,7 @@ class InvoiceController extends Controller
         $products = Product::all();
         $taxRate = Company::first()->tax_rate;
 
-        return Inertia::render('Admin/CreateInvoice', [
+        return Inertia::render('CreateInvoice', [
             'customers' => $customers,
             'products' => $products,
             'taxRate' => $taxRate,
@@ -135,10 +135,11 @@ class InvoiceController extends Controller
 
             DB::commit();
 
-            return redirect()->route("admin.invoices")->with('success', 'Invoice successfully created.');
+            $user = Auth::user();
+
+            return redirect()->route($user->role->name.'.invoices')->with('success', 'Invoice successfully created.');
         } catch (\Exception $e) {
             DB::rollBack();
-
             return redirect()->back()->with('error', 'Error creating the invoice.');
         }
     }
@@ -191,7 +192,7 @@ class InvoiceController extends Controller
         $products = Product::all();
         $taxRate = Company::first()->tax_rate;
 
-        return inertia('Admin/UpdateInvoice', [
+        return inertia('UpdateInvoice', [
             'invoice' => $invoice,
             'customers' => $customers,
             'products' => $products,
@@ -283,7 +284,9 @@ class InvoiceController extends Controller
 
             DB::commit();
 
-            return redirect()->route("admin.invoices")->with('success', 'Invoice updated successfully.');
+            $user = Auth::user();
+
+            return redirect()->route($user->role->name.'.invoices')->with('success', 'Invoice successfully updated.');
         } catch (\Exception $e) {
             DB::rollBack();
 

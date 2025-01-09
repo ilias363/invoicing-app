@@ -31,7 +31,7 @@ class CustomerController extends Controller
             ->paginate(8);
 
 
-        return Inertia::render('Admin/Customers', [
+        return Inertia::render('Customers', [
             'customersData' => response()->json($customers),
             'searchTerm' => $search,
             'sortBy' => $sortBy,
@@ -44,7 +44,7 @@ class CustomerController extends Controller
      */
     public function create()
     {
-        return Inertia::render('Admin/CreateCustomer');
+        return Inertia::render('CreateCustomer');
     }
 
     /**
@@ -79,9 +79,9 @@ class CustomerController extends Controller
                 'email' => $validatedData['email'],
             ]);
     
-            DB::commit();
-    
-            return redirect()->route('admin.customers')->with('success', 'Customer created successfully!');
+            $user = Auth::user();
+
+            return redirect()->route($user->role->name.'.customers')->with('success', 'Customer successfully created.');
         } catch (\Exception $e) {
             DB::rollBack();
     
@@ -104,7 +104,7 @@ class CustomerController extends Controller
     {
         $customerToEdit = Customer::find($id);
 
-        return inertia('Admin/UpdateCustomer', [
+        return inertia('UpdateCustomer', [
             'customerToEdit' => $customerToEdit,
         ]);
     }
@@ -143,9 +143,9 @@ class CustomerController extends Controller
 
             $customer->save();
 
-            DB::commit();
+            $user = Auth::user();
 
-            return redirect()->route('admin.customers')->with('success', 'Customer updated successfully!');
+            return redirect()->route($user->role->name.'.customers')->with('success', 'Customer successfully updated.');
         } catch (\Exception $e) {
             DB::rollBack();
 

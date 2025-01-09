@@ -1,15 +1,17 @@
 import Header from "@/Components/Header";
 import ListCustomers from "@/Components/ListCustomers";
 import SubHeader from "@/Components/SubHeader";
-import { router } from "@inertiajs/react";
+import { router, usePage } from "@inertiajs/react";
 
 const Customers = ({ customersData, searchTerm, sortBy, sortDirection }) => {
     const handleSearchSubmit = (search) => {
-        router.get(route("admin.customers"), { search, sortBy, sortDirection });
+        router.get(route(`${auth.user.role.name}.customers`), { search, sortBy, sortDirection });
     };
 
+    const { auth } = usePage().props;
+
     const handleSortChange = (sortBy, sortDirection) => {
-        router.get(route("admin.customers"), {
+        router.get(route(`${auth.user.role.name}.customers`), {
             search: searchTerm,
             sortBy,
             sortDirection,
@@ -24,7 +26,7 @@ const Customers = ({ customersData, searchTerm, sortBy, sortDirection }) => {
                 placeholder={"Search by Name"}
                 onSearchSubmit={handleSearchSubmit}
                 search={searchTerm}
-                createLink={"/admin/create-customer"}
+                createLink={`/${auth.user.role.name}/create-customer`}
             />
             <ListCustomers
                 customers={customersData.original.data}

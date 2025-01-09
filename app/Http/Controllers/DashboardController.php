@@ -20,7 +20,7 @@ class DashboardController extends Controller
         $invoices = Invoice::all();
         $roles = Role::all();
 
-        return Inertia::render('Admin/Home', [
+        return Inertia::render('Home', [
             'logs' => response()->json($logs),
             'invoicesData' => response()->json($invoices),
             'roles' => response()->json($roles),

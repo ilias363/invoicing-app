@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useForm } from "@inertiajs/react";
+import { useForm, usePage } from "@inertiajs/react";
 import FlashMessage from "./FlashMessage";
 
 const InvoiceForm = ({
@@ -13,7 +13,7 @@ const InvoiceForm = ({
         ...product,
         quantity: 1,
     }));
-
+    const { auth } = usePage().props;
     const [products, setProducts] = useState([]);
     const [address, setAddress] = useState("");
     const [searchProductTerm, setSearchProductTerm] = useState("");
@@ -74,7 +74,7 @@ const InvoiceForm = ({
         setError(errors);
 
         if (Object.keys(errors).length === 0) {
-            toCreate ? post("/admin/create-invoice") : post(`/admin/invoices/${invoice_data.id}/edit`);
+            toCreate ? post(`/${auth.user.role.name}/create-invoice`) : post(`/${auth.user.role.name}/invoices/${invoice_data.id}/edit`);
         }
     };
 

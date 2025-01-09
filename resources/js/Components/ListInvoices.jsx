@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { FaEllipsisH } from "react-icons/fa";
-import { router } from "@inertiajs/react";
+import { router, usePage } from "@inertiajs/react";
 import FlashMessage from "./FlashMessage";
 
 const ListInvoices = ({
@@ -13,6 +13,8 @@ const ListInvoices = ({
 }) => {
     const [openInvoiceId, setOpenInvoiceId] = useState(null);
 
+    const { auth } = usePage().props;
+    
     const makeUrlWithParams = (url) => {
         if (searchTerm !== null) url += "&search=" + searchTerm;
         if (sortBy !== null) url += "&sortBy=" + sortBy;
@@ -38,20 +40,20 @@ const ListInvoices = ({
     };
 
     const handleApprove = (id) => {
-        router.post(route("admin.invoices.approve", id));
+        router.post(route(`${auth.user.role.name}.invoices.approve`, id));
     };
 
     const handleDeny = (id) => {
-        router.post(route("admin.invoices.deny", id));
+        router.post(route(`${auth.user.role.name}.invoices.deny`, id));
     };
 
     const handleEdit = (id) => {
-        router.get(route("admin.invoices.edit", id));
+        router.get(route(`${auth.user.role.name}.invoices.edit`, id));
     };
 
     const handleDelete = (id) => {
         if (confirm("Are you sure you want to delete this invoice?")) {
-            router.delete(route("admin.invoices.destroy", id));
+            router.delete(route(`${auth.user.role.name}.invoices.destroy`, id));
         }
     };
 
@@ -109,7 +111,8 @@ const ListInvoices = ({
                             {sortBy === "invoice_date" &&
                                 (sortDirection === "asc" ? "↑" : "↓")}
                         </th>
-                        <th className="border px-6 py-3">Actions</th>
+                        {(auth.user.role.name === 'admin' || auth.user.role.name === 'accountant') && (
+                        <th className="border px-6 py-3">Actions</th>)}
                     </tr>
                 </thead>
                 <tbody>
@@ -158,6 +161,7 @@ const ListInvoices = ({
                             <td className="border px-6 py-4 text-gray-800">
                                 {invoice.invoice_date}
                             </td>
+                            {(auth.user.role.name === 'admin' || auth.user.role.name === 'accountant') && (
                             <td className="border px-6 py-4 text-center">
                                 <button
                                     onClick={() =>
@@ -223,7 +227,7 @@ const ListInvoices = ({
                                         )}
                                     </div>
                                 )}
-                            </td>
+                            </td>)}
                         </tr>
                     ))}
                 </tbody>
