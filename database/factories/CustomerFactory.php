@@ -5,26 +5,32 @@ namespace Database\Factories;
 use App\Models\Customer;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
-/**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Customer>
- */
 class CustomerFactory extends Factory
 {
-        // Specify the model the factory is for
-        protected $model = Customer::class;
-    /**
-     * Define the model's default state.
-     *
-     * @return array<string, mixed>
-     */
+    protected $model = Customer::class;
+
     public function definition(): array
     {
+        $names = json_decode(file_get_contents(storage_path('app/moroccan_names.json')), true);
+
+        $firstName = $this->faker->randomElement($names['first_names']);
+        $lastName = $this->faker->randomElement($names['last_names']);
+        $moroccanPhone = '+212 ' . $this->faker->numberBetween(600, 799) . '-' . $this->faker->numberBetween(100000, 999999);
+
+        $street = $this->faker->randomElement($names['streets']);
+        $city = $this->faker->randomElement($names['cities']);
+        $region = $this->faker->randomElement($names['regions']);
+        $moroccanAddress = $street . ', ' . $city . ', ' . $region . ', Maroc';
+
+        $domain = 'gmail.ma';
+        $email = strtolower($firstName . '.' . $lastName . '@' . $domain);
+
         return [
-            'first_name' => $this->faker->firstName,
-            'last_name' => $this->faker->lastName,
-            'phone' => $this->faker->phoneNumber,
-            'address' => $this->faker->address,
-            'email' => $this->faker->unique()->safeEmail
+            'first_name' => $firstName,
+            'last_name' => $lastName,
+            'phone' => $moroccanPhone,
+            'address' => $moroccanAddress,
+            'email' => $email,
         ];
     }
 }

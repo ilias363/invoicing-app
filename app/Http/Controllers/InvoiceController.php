@@ -420,7 +420,7 @@ class InvoiceController extends Controller
                 return redirect()->back()->with('error', 'Failed to decode PDF.');
             }
             
-            Mail::to($email)->send(new InvoiceMail($invoice_id, $customer_name, $pdfBuffer));
+            Mail::to('fajr.pn@gmail.com')->send(new InvoiceMail($invoice_id, $customer_name, $pdfBuffer));
     
             return redirect()->back()->with('success', 'Email sent successfully.');
         } catch (\Exception $e) {
