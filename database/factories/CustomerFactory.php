@@ -23,7 +23,7 @@ class CustomerFactory extends Factory
         $moroccanAddress = $street . ', ' . $city . ', ' . $region . ', Maroc';
 
         $domain = 'gmail.ma';
-        $email = strtolower($firstName . '.' . $lastName . '@' . $domain);
+        $email = strtolower($firstName . '.' . str_replace(' ', '', $lastName) . '@' . $domain);
 
         return [
             'first_name' => $firstName,
