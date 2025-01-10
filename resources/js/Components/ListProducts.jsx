@@ -155,16 +155,20 @@ const ListProducts = ({
                                             >
                                                 Edit
                                             </a>
-                                            {(auth.user.role.name === 'admin') && (
-                                            <a
-                                                onClick={() => {
-                                                    handleDelete(product.id);
-                                                }}
-                                                className="block px-3 py-1 text-sm text-gray-700 hover:bg-gray-100"
-                                                role="menuitem"
-                                            >
-                                                Delete
-                                            </a>)}
+                                            {auth.user.role.name ===
+                                                "admin" && (
+                                                <a
+                                                    onClick={() => {
+                                                        handleDelete(
+                                                            product.id
+                                                        );
+                                                    }}
+                                                    className="block px-3 py-1 text-sm text-gray-700 hover:bg-gray-100"
+                                                    role="menuitem"
+                                                >
+                                                    Delete
+                                                </a>
+                                            )}
                                         </div>
                                     </div>
                                 )}

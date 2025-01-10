@@ -14,8 +14,6 @@ Route::middleware(['auth', 'role:accountant'])->prefix('accountant')->as('accoun
     Route::get('invoices/{id}/edit', [InvoiceController::class, 'edit'])->name('invoices.edit');
     Route::post('invoices/{id}/edit', [InvoiceController::class, 'update']);
     Route::delete('invoices/{id}/delete', [InvoiceController::class, 'destroy'])->name('invoices.destroy');
-    Route::post('invoices/{id}/approve', [InvoiceController::class, 'approve'])->name('invoices.approve');
-    Route::post('invoices/{id}/deny', [InvoiceController::class, 'deny'])->name('invoices.deny');
 
     // Customer Routes
     Route::get('customers', [CustomerController::class, 'index'])->name('customers');

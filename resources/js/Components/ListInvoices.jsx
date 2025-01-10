@@ -115,10 +115,9 @@ const ListInvoices = ({
                             {sortBy === "invoice_date" &&
                                 (sortDirection === "asc" ? "↑" : "↓")}
                         </th>
-                        {(auth.user.role.name === "admin" ||
-                            auth.user.role.name === "accountant") && (
-                            <th className="border px-6 py-3">Actions</th>
-                        )}
+                        {["admin", "accountant"].includes(
+                            auth.user.role.name
+                        ) && <th className="border px-6 py-3">Actions</th>}
                     </tr>
                 </thead>
                 <tbody>
@@ -167,8 +166,10 @@ const ListInvoices = ({
                             <td className="border px-6 py-4 text-gray-800">
                                 {invoice.invoice_date}
                             </td>
-                            {(auth.user.role.name === "admin" ||
-                                auth.user.role.name === "accountant") && (
+
+                            {["admin", "accountant"].includes(
+                                auth.user.role.name
+                            ) && (
                                 <td className="border px-6 py-4 text-center">
                                     <button
                                         onClick={() =>
@@ -196,58 +197,74 @@ const ListInvoices = ({
                                             >
                                                 Preview
                                             </button>
-                                            <button
-                                                onClick={() => {
-                                                    setOpenInvoiceId(null);
-                                                    handleEdit(invoice.id);
-                                                }}
-                                                className="block w-full text-left px-3 py-1 text-sm text-gray-700 hover:bg-gray-100"
-                                                role="menuitem"
-                                            >
-                                                Edit
-                                            </button>
-                                            <button
-                                                onClick={() => {
-                                                    setOpenInvoiceId(null);
-                                                    handleDelete(invoice.id);
-                                                }}
-                                                className="block w-full text-left px-3 py-1 text-sm text-gray-700 hover:bg-gray-100"
-                                                role="menuitem"
-                                            >
-                                                Delete
-                                            </button>
-                                            {invoice.status === "pending" && (
+                                            {["admin", "accountant"].includes(
+                                                auth.user.role.name
+                                            ) && (
                                                 <>
                                                     <button
                                                         onClick={() => {
                                                             setOpenInvoiceId(
                                                                 null
                                                             );
-                                                            handleApprove(
+                                                            handleEdit(
                                                                 invoice.id
                                                             );
                                                         }}
                                                         className="block w-full text-left px-3 py-1 text-sm text-gray-700 hover:bg-gray-100"
                                                         role="menuitem"
                                                     >
-                                                        Approve
+                                                        Edit
                                                     </button>
                                                     <button
                                                         onClick={() => {
                                                             setOpenInvoiceId(
                                                                 null
                                                             );
-                                                            handleDeny(
+                                                            handleDelete(
                                                                 invoice.id
                                                             );
                                                         }}
                                                         className="block w-full text-left px-3 py-1 text-sm text-gray-700 hover:bg-gray-100"
                                                         role="menuitem"
                                                     >
-                                                        Deny
+                                                        Delete
                                                     </button>
                                                 </>
                                             )}
+                                            {invoice.status === "pending" &&
+                                                auth.user.role.name ===
+                                                    "admin" && (
+                                                    <>
+                                                        <button
+                                                            onClick={() => {
+                                                                setOpenInvoiceId(
+                                                                    null
+                                                                );
+                                                                handleApprove(
+                                                                    invoice.id
+                                                                );
+                                                            }}
+                                                            className="block w-full text-left px-3 py-1 text-sm text-gray-700 hover:bg-gray-100"
+                                                            role="menuitem"
+                                                        >
+                                                            Approve
+                                                        </button>
+                                                        <button
+                                                            onClick={() => {
+                                                                setOpenInvoiceId(
+                                                                    null
+                                                                );
+                                                                handleDeny(
+                                                                    invoice.id
+                                                                );
+                                                            }}
+                                                            className="block w-full text-left px-3 py-1 text-sm text-gray-700 hover:bg-gray-100"
+                                                            role="menuitem"
+                                                        >
+                                                            Deny
+                                                        </button>
+                                                    </>
+                                                )}
                                         </div>
                                     )}
                                 </td>

@@ -3,7 +3,6 @@ import { FaEllipsisH } from "react-icons/fa";
 import { router, usePage } from "@inertiajs/react";
 import FlashMessage from "./FlashMessage";
 
-
 const ListCustomers = ({
     customers,
     pages,
@@ -26,7 +25,9 @@ const ListCustomers = ({
 
     const handleDelete = (id) => {
         if (confirm("Are you sure you want to delete this customer?")) {
-            router.delete(route(`${auth.user.role.name}.customers.destroy`, id));
+            router.delete(
+                route(`${auth.user.role.name}.customers.destroy`, id)
+            );
         }
     };
 
@@ -92,8 +93,9 @@ const ListCustomers = ({
                             {sortBy === "address" &&
                                 (sortDirection === "asc" ? "↑" : "↓")}
                         </th>
-                        {(auth.user.role.name === 'admin' || auth.user.role.name === 'salesman') && (
-                        <th className="border px-6 py-3">Actions</th>)}
+                        {["admin", "salesman"].includes(
+                            auth.user.role.name
+                        ) && <th className="border px-6 py-3">Actions</th>}
                     </tr>
                 </thead>
                 <tbody>
@@ -117,46 +119,53 @@ const ListCustomers = ({
                             <td className="border px-6 py-4 text-gray-800">
                                 {customer.address}
                             </td>
-                            {(auth.user.role.name === 'admin' || auth.user.role.name === 'salesman') && (
-                            <td className="border px-6 py-4 text-center">
-                                <button
-                                    onClick={() =>
-                                        toggleActionsMenu(customer.id)
-                                    }
-                                    className="p-2 text-gray-600 hover:text-gray-800 focus:outline-none"
-                                >
-                                    <FaEllipsisH size={25} />
-                                </button>
-
-                                {openCustomerId === customer.id && (
-                                    <div
-                                        className="absolute w-24 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5"
-                                        role="menu"
-                                        aria-orientation="vertical"
-                                        aria-labelledby="options-menu"
+                            {["admin", "salesman"].includes(
+                                auth.user.role.name
+                            ) && (
+                                <td className="border px-6 py-4 text-center">
+                                    <button
+                                        onClick={() =>
+                                            toggleActionsMenu(customer.id)
+                                        }
+                                        className="p-2 text-gray-600 hover:text-gray-800 focus:outline-none"
                                     >
-                                        <div className="py-1">
-                                            <a
-                                                href={`/${auth.user.role.name}/customers/${customer.id}/edit`}
-                                                className="block px-3 py-1 text-sm text-gray-700 hover:bg-gray-100"
-                                                role="menuitem"
-                                            >
-                                                Edit
-                                            </a>
-                                            {(auth.user.role.name === 'admin') && (
-                                            <a
-                                                onClick={() => {
-                                                    handleDelete(customer.id);
-                                                }}
-                                                className="block px-3 py-1 text-sm text-gray-700 hover:bg-gray-100"
-                                                role="menuitem"
-                                            >
-                                                Delete
-                                            </a>)}
+                                        <FaEllipsisH size={25} />
+                                    </button>
+
+                                    {openCustomerId === customer.id && (
+                                        <div
+                                            className="absolute w-24 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5"
+                                            role="menu"
+                                            aria-orientation="vertical"
+                                            aria-labelledby="options-menu"
+                                        >
+                                            <div className="py-1">
+                                                <a
+                                                    href={`/${auth.user.role.name}/customers/${customer.id}/edit`}
+                                                    className="block px-3 py-1 text-sm text-gray-700 hover:bg-gray-100"
+                                                    role="menuitem"
+                                                >
+                                                    Edit
+                                                </a>
+                                                {auth.user.role.name ===
+                                                    "admin" && (
+                                                    <a
+                                                        onClick={() => {
+                                                            handleDelete(
+                                                                customer.id
+                                                            );
+                                                        }}
+                                                        className="block px-3 py-1 text-sm text-gray-700 hover:bg-gray-100"
+                                                        role="menuitem"
+                                                    >
+                                                        Delete
+                                                    </a>
+                                                )}
+                                            </div>
                                         </div>
-                                    </div>
-                                )}
-                            </td>)}
+                                    )}
+                                </td>
+                            )}
                         </tr>
                     ))}
                 </tbody>

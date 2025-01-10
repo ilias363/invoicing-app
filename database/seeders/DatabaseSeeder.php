@@ -5,7 +5,6 @@ namespace Database\Seeders;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use App\Models\Company;
-use App\Models\Privilege;
 use App\Models\Role;
 use App\Models\Customer;
 use App\Models\DocStyle;
@@ -29,24 +28,6 @@ class DatabaseSeeder extends Seeder
         Product::factory()->count(50)->create();
 
         Customer::factory()->count(30)->create();
-
-        $privileges = [
-            'Manage Users',
-            'View Invoices',
-            'Edit Invoices',
-            'Manage Invoices',
-            'Create Sales Order',
-            'View Sales Orders',
-            'View Financial Records',
-            'Approve Invoices',
-            'Manage Roles',
-        ];
-
-        foreach ($privileges as $privilege) {
-            if (!Privilege::where('name', $privilege)->exists()) {
-                Privilege::factory()->create(['name' => $privilege]);
-            }
-        }
 
         $roles = [
             'admin',

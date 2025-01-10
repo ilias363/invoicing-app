@@ -29,7 +29,7 @@ function Header() {
                         >
                             Invoices
                         </a>
-                        {(auth.user.role.name === 'admin' || auth.user.role.name === 'salesman') && (
+                        {["admin", "salesman"].includes(auth.user.role.name) && (
                             <a
                                 href={`/${auth.user.role.name}/products`}
                                 className="hover:text-[#ACACAC] text-white tracking-widest cursor-pointer"
