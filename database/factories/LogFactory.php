@@ -17,14 +17,20 @@ class LogFactory extends Factory
 
     public function definition(): array
     {
-        $startOfWeek = Carbon::now()->startOfWeek();
-        $endOfWeek = Carbon::now()->endOfWeek();
+        $invoice = Invoice::inRandomOrder()->first();
+        $user = User::inRandomOrder()->first();
+
+        $actions = ['CREATED', 'APPROVED', 'DENIED', 'UPDATED', 'DELETED', 'SENT'];
+
+        $action = $this->faker->randomElement($actions);
+
+        $timeAction = $this->faker->dateTimeBetween('-7 days', 'now');
 
         return [
-            'time_action' => $this->faker->dateTimeBetween($startOfWeek, $endOfWeek),
-            'action' => $this->faker->sentence(),
-            'user_id' => User::factory(),
-            'invoice_id' => Invoice::factory(),
+            'time_action' => $timeAction,
+            'action' => 'Invoice number ' . $invoice->id . ' ' . $action . ' by ' . $user->role->name . ' ' . $user->last_name . ' ' . $user->first_name,
+            'user_id' => $user->id,
+            'invoice_id' => $invoice->id,
         ];
     }
 }

@@ -77,11 +77,11 @@ class DatabaseSeeder extends Seeder
             }
         }
 
-        User::factory()->create([
-            'email' => 'closed@gmail.com',
-            'password' => 'closed',
-            'account_status' => 'closed',
-        ]);
+        // User::factory()->create([
+        //     'email' => 'closed@gmail.com',
+        //     'password' => 'closed',
+        //     'account_status' => 'closed',
+        // ]);
 
         $customers = Customer::all();
         $docStyles = DocStyle::all();
@@ -109,12 +109,6 @@ class DatabaseSeeder extends Seeder
                 $invoice->update(['total_amount' => $totalAmount * (1 + Company::first()->tax_rate)]);
             });
 
-        $users = User::all();
-        $invoices = Invoice::all();
-
-        Log::factory(30)->create([
-            'user_id' => fn() => $users->random()->id,
-            'invoice_id' => fn() => $invoices->random()->id,
-        ]);
+        Log::factory()->count(30)->create();
     }
 }
