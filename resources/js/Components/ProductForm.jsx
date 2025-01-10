@@ -2,7 +2,7 @@ import React from "react";
 import { useForm, usePage } from "@inertiajs/react";
 import FlashMessage from "./FlashMessage";
 
-const ProductForm = ({ product_data, toCreate }) => {
+const ProductForm = ({ product_data, toCreate, categories }) => {
   const { data, setData, post, errors, processing } = useForm(product_data);
 
   const handleChange = (e) => {
@@ -89,21 +89,21 @@ const ProductForm = ({ product_data, toCreate }) => {
             Category
         </label>
         <select
-            name="category"
-            id="category"
-            value={data.category}
-            onChange={handleChange}
-            className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
-        >
-            <option value="" disabled>
-            Select a category
-            </option>
-            <option value="Categorie 1">Categorie 1</option>
-            <option value="Categorie 2">Categorie 2</option>
-            <option value="Categorie 3">Categorie 3</option>
-            <option value="Categorie 4">Categorie 4</option>
-            <option value="Categorie 5">Categorie 5</option>
-        </select>
+                name="category"
+                id="category"
+                value={data.category}
+                onChange={handleChange}
+                className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+            >
+                <option value="" disabled>
+                    Select a category
+                </option>
+                {categories.map((category, index) => (
+                    <option key={index} value={category}>
+                        {category}
+                    </option>
+                ))}
+            </select>
         {errors.category && <p className="text-red-500 text-sm">{errors.category}</p>}
         <label htmlFor="discount" className="block text-sm font-medium text-gray-700">
           Discount

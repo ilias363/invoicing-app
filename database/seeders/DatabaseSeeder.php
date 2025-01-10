@@ -25,9 +25,20 @@ class DatabaseSeeder extends Seeder
 
         DocStyle::factory()->count(3)->create();
 
-        Product::factory()->count(50)->create();
+        Product::factory()->count(70)->create();
 
-        Customer::factory()->count(30)->create();
+        $usedEmails = [];
+
+        foreach (range(1, 30) as $i) {
+            
+            do {
+                $customer = Customer::factory()->make();
+                $email = $customer->email;
+            } while (in_array($email, $usedEmails));
+
+            $usedEmails[] = $email;
+            Customer::create($customer->toArray());
+        }
 
         $roles = [
             'admin',

@@ -13,11 +13,16 @@ return new class extends Migration {
             $table->double('discount')->min(0)->max(100)->default(0);
             $table->integer('stock_quantity');
             $table->enum('category', [
-                'Categorie 1',
-                'Categorie 2',
-                'Categorie 3',
-                'Categorie 4',
-                'Categorie 5',
+                'Meubles de salon',
+                'Meubles de chambre',
+                'Cuisine et salle à manger',
+                'Décoration',
+                'Salle de bain',
+                'Rangements',
+                'Bureau et multimédia',
+                'Extérieur',
+                'Enfants',
+                'Électroménager et accessoires',
             ])->nullable();
             $table->softDeletes();
         });

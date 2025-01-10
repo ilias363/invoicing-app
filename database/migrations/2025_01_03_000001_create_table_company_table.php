@@ -14,7 +14,7 @@ return new class extends Migration {
             $table->string('phone', 20);
             $table->string('tax_id', 10)->nullable();
             $table->double('tax_rate')->min(0)->max(100)->default(0);
-            $table->text('logo')->nullable();
+            $table->longtext('logo')->nullable();
         });
     }
 

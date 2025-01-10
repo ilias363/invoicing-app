@@ -19,14 +19,40 @@ class CompanyFactory extends Factory
      */
     public function definition()
     {
+        $name = 'IKEA';
+
+        if ($name === 'IKEA') {
+            $address = 'Zenata, Sidi Bernoussi, Casablanca, Maroc';
+            $email = 'contact.ma@ikea.com';
+            $phone = '+212 522 79 34 00';
+            $taxId = 'TAXMAR001';
+
+            // Path to the image in the public directory
+            $imagePath = public_path('ikea_logo.png');
+        } else {
+            $address = $this->faker->address;
+            $email = $this->faker->unique()->safeEmail;
+            $phone = $this->faker->phoneNumber;
+            $taxId = $this->faker->numerify('TAX###');
+            $imagePath = null;
+        }
+
+        // Encode the image in Base64 if it exists
+        $base64Image = $imagePath && file_exists($imagePath)
+            ? base64_encode(file_get_contents($imagePath))
+            : null;
+
         return [
-            'name' => $this->faker->company,
-            'address' => $this->faker->address,
-            'email' => $this->faker->unique()->safeEmail,
-            'phone' => $this->faker->phoneNumber,
-            'tax_id' => $this->faker->numerify('TAX###'),
+            'name' => $name,
+            'address' => $address,
+            'email' => $email,
+            'phone' => $phone,
+            'tax_id' => $taxId,
             'tax_rate' => 20,
-            'logo' => $this->faker->imageUrl(200, 200, 'business', true, 'logo'),
+            'logo' => $base64Image,
         ];
     }
 }
+
+
+

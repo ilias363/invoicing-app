@@ -50,7 +50,7 @@ const SubHeader = ({
                     </svg>
                 </form>
 
-                {/* Create Invoice Button */}
+                {/* Create Invoice/Product Button */}
                 {(auth.user.role.name === "admin" ||
                     (auth.user.role.name === "accountant" &&
                         title === "Invoice") ||

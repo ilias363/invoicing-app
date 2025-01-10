@@ -40,7 +40,22 @@ class ProductController extends Controller
      */
     public function create()
     {
-        return Inertia::render('CreateProduct');
+        $categories = [
+            'Meubles de salon',
+            'Meubles de chambre',
+            'Cuisine et salle à manger',
+            'Décoration',
+            'Salle de bain',
+            'Rangements',
+            'Bureau et multimédia',
+            'Extérieur',
+            'Enfants',
+            'Électroménager et accessoires',
+        ];
+    
+        return Inertia::render('CreateProduct', [
+            'categories' => $categories,
+        ]);
     }
 
     /**
@@ -100,10 +115,23 @@ class ProductController extends Controller
      */
     public function edit($id)
     {
+        $categories = [
+            'Meubles de salon',
+            'Meubles de chambre',
+            'Cuisine et salle à manger',
+            'Décoration',
+            'Salle de bain',
+            'Rangements',
+            'Bureau et multimédia',
+            'Extérieur',
+            'Enfants',
+            'Électroménager et accessoires',
+        ];
         $productToEdit = Product::find($id);
 
         return inertia('UpdateProduct', [
             'productToEdit' => $productToEdit,
+            'categories' => $categories,
         ]);
     }
 
