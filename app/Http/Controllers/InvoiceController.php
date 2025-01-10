@@ -142,7 +142,7 @@ class InvoiceController extends Controller
             // Prepare log data
             $logData = new Request([
                 'time_action' => now(),
-                'action' => 'Invoice number '.$invoice->id.' CREATED by ' . $user->role->name . ' ' . $user->last_name.' '.$user->first_name,
+                'action' => 'Invoice number ' . $invoice->id . ' CREATED by ' . $user->role->name . ' ' . $user->last_name . ' ' . $user->first_name,
                 'user_id' => $user->id,
                 'invoice_id' => $invoice->id,
             ]);
@@ -151,7 +151,7 @@ class InvoiceController extends Controller
             $logController = new LogController();
             $logController->store($logData);
 
-            
+
 
             return redirect()->route($user->role->name . '.invoices')->with('success', 'Invoice successfully created.');
         } catch (\Exception $e) {
@@ -175,7 +175,7 @@ class InvoiceController extends Controller
         // Prepare log data
         $logData = new Request([
             'time_action' => now(),
-            'action' => 'Invoice number '.$invoice->id.' APPROVED by ' . $user->role->name . ' ' . $user->last_name.' '.$user->first_name,
+            'action' => 'Invoice number ' . $invoice->id . ' APPROVED by ' . $user->role->name . ' ' . $user->last_name . ' ' . $user->first_name,
             'user_id' => $user->id,
             'invoice_id' => $invoice->id,
         ]);
@@ -202,7 +202,7 @@ class InvoiceController extends Controller
         // Prepare log data
         $logData = new Request([
             'time_action' => now(),
-            'action' => 'Invoice number '.$invoice->id.' DENIED by ' . $user->role->name . ' ' . $user->last_name.' '.$user->first_name,
+            'action' => 'Invoice number ' . $invoice->id . ' DENIED by ' . $user->role->name . ' ' . $user->last_name . ' ' . $user->first_name,
             'user_id' => $user->id,
             'invoice_id' => $invoice->id,
         ]);
@@ -359,11 +359,11 @@ class InvoiceController extends Controller
             // Prepare log data
             $logData = new Request([
                 'time_action' => now(),
-                'action' => 'Invoice number '.$invoice->id.' UPDATED by ' . $user->role->name . ' ' . $user->last_name.' '.$user->first_name,
+                'action' => 'Invoice number ' . $invoice->id . ' UPDATED by ' . $user->role->name . ' ' . $user->last_name . ' ' . $user->first_name,
                 'user_id' => $user->id,
                 'invoice_id' => $invoice->id,
             ]);
-    
+
             $logController = new LogController();
             $logController->store($logData);
             return redirect()->route($user->role->name . '.invoices')->with('success', 'Invoice successfully updated.');
@@ -386,7 +386,7 @@ class InvoiceController extends Controller
         // Prepare log data
         $logData = new Request([
             'time_action' => now(),
-            'action' => 'Invoice number '.$invoice->id.' DELETED by ' . $user->role->name . ' ' . $user->last_name.' '.$user->first_name,
+            'action' => 'Invoice number ' . $invoice->id . ' DELETED by ' . $user->role->name . ' ' . $user->last_name . ' ' . $user->first_name,
             'user_id' => $user->id,
             'invoice_id' => $invoice->id,
         ]);
@@ -407,21 +407,34 @@ class InvoiceController extends Controller
         if (!$pdfBase64) {
             return redirect()->back()->with('error', 'No PDF data provided.');
         }
-    
+
         // Remove the base64 prefix if present
         if (str_contains($pdfBase64, 'base64,')) {
             $pdfBase64 = explode('base64,', $pdfBase64)[1];
         }
-        
+
         try {
             $pdfBuffer = base64_decode($pdfBase64);
-            
+
             if ($pdfBuffer === false) {
                 return redirect()->back()->with('error', 'Failed to decode PDF.');
             }
-            
-            Mail::to('fajr.pn@gmail.com')->send(new InvoiceMail($invoice_id, $customer_name, $pdfBuffer));
-    
+
+            Mail::to($email)->send(new InvoiceMail($invoice_id, $customer_name, $pdfBuffer));
+
+            $user = Auth::user();
+            // Prepare log data
+            $logData = new Request([
+                'time_action' => now(),
+                'action' => 'Invoice number ' . $invoice_id . ' SENT to' . $customer_name . ' by ' . $user->role->name . ' ' . $user->last_name . ' ' . $user->first_name,
+                'user_id' => $user->id,
+                'invoice_id' => $invoice_id,
+            ]);
+
+            // Call the LogController's store method
+            $logController = new LogController();
+            $logController->store($logData);
+
             return redirect()->back()->with('success', 'Email sent successfully.');
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'An error occurred: ' . $e->getMessage());

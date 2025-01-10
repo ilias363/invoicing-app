@@ -17,23 +17,36 @@ class InvoiceFactory extends Factory
 
     public function definition(): array
     {
-        $start = Carbon::now()->subMonths(4)->startOfMonth();
-        $end = Carbon::now()->endOfMonth();
+        $invoiceDate = $this->faker->dateTimeBetween('-4 months', 'now');
+        $dueDate = $this->faker->dateTimeBetween($invoiceDate, '+3 months');
 
-        $startdue = Carbon::now()->startOfMonth();
-        $enddue = Carbon::now()->addMonth(3)->endOfMonth();
-        
+        $baseAmount = $this->faker->randomFloat(2, 50, 10000);
+        $taxRate = $this->faker->randomFloat(2, 0, 20);
+        $taxAmount = round(($baseAmount * $taxRate) / 100, 2);
+        $totalAmount = $baseAmount + $taxAmount;
+
+        $statuses = ['pending', 'approved', 'denied'];
+        $status = $this->faker->randomElement($statuses);
+
+        $paymentStatuses = [
+            'pending' => ['pending', 'cancelled'], 
+            'approved' => ['paid', 'pending'], 
+            'denied' => ['cancelled']
+        ];
+
+        $paymentStatus = $this->faker->randomElement($paymentStatuses[$status]);
+
         return [
-            'invoice_date' => $this->faker->dateTimeBetween($start, $end),
-            'total_amount' => $this->faker->randomFloat(2, 50, 10000), // Random amount between 50 and 10,000
-            'status' => $this->faker->randomElement(['pending', 'approved', 'denied']),
-            'payment_status' => $this->faker->randomElement(['pending', 'paid', 'cancelled']),
-            'notes' => $this->faker->text(200),
-            'due_date' => $this->faker->dateTimeBetween($startdue, $enddue),
+            'invoice_date' => $invoiceDate,
+            'due_date' => $dueDate,
+            'total_amount' => $totalAmount,
+            'status' => $status,
+            'payment_status' => $paymentStatus,
+            'notes' => $this->faker->optional()->text(200),
             'payment_method' => $this->faker->randomElement(['Credit Card', 'Bank Transfer', 'Cash']),
-            'tax' => $this->faker->randomFloat(2, 0, 20), // Tax rate between 0 and 20
+            'tax' => $taxRate,
             'customer_id' => Customer::factory(), 
-            'doc_style_id' => DocStyle::factory(), 
+            'doc_style_id' => DocStyle::factory(),
         ];
     }
 }

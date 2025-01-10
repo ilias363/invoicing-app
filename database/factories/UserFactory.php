@@ -2,8 +2,10 @@
 
 namespace Database\Factories;
 
+use App\Models\Role;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Facades\Hash;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\User>
@@ -19,16 +21,25 @@ class UserFactory extends Factory
      */
     public function definition(): array
     {
+        $data = json_decode(file_get_contents(storage_path('app/moroccan_names.json')), true);
+
+        $firstName = $this->faker->randomElement($data['first_names']);
+        $lastName = $this->faker->randomElement($data['last_names']);
+        $moroccanPhone = '+212 ' . $this->faker->numberBetween(600, 799) . '-' . $this->faker->numberBetween(100000, 999999);
+
+        $domain = 'gmail.ma';
+        $email = strtolower($firstName . '.' . str_replace(' ', '', $lastName) . '@' . $domain);
+
         return [
-            'first_name' => $this->faker->firstName,
-            'last_name' => $this->faker->lastName,
-            'email' => $this->faker->unique()->safeEmail,
-            'phone' => $this->faker->optional()->phoneNumber,
-            'password' => bcrypt('password'), // Default password, replace with hashing logic as needed
-            'last_login' => $this->faker->optional()->dateTimeThisYear,
-            'failed_attempts' => $this->faker->numberBetween(0, 5),
+            'first_name' => $firstName,
+            'last_name' => $lastName,
+            'email' => $email,
+            'phone' => $moroccanPhone,
+            'password' => Hash::make('password'),
+            'last_login' => null,
+            'failed_attempts' => 0,
             'account_status' => $this->faker->randomElement(['active', 'inactive', 'suspended', 'closed']),
-            'role_id' => 1, // Replace with dynamic role IDs if needed
+            'role_id' => Role::inRandomOrder()->first()->id,
         ];
     }
 }

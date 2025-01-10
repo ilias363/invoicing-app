@@ -61,33 +61,49 @@ class DatabaseSeeder extends Seeder
                 $role = Role::where('name', $role)->first();
                 $user['role_id'] = $role->id;
                 $user['password'] = Hash::make($user['password']);
+                $user['account_status'] = 'active';
                 User::factory()->create($user);
             }
         }
 
+        User::factory()->create([
+            'email' => 'closed@gmail.com',
+            'password' => 'closed',
+            'account_status' => 'closed',
+        ]);
 
         $customers = Customer::all();
         $docStyles = DocStyle::all();
         $products = Product::all();
 
-        Invoice::factory(50)->create([
-            'customer_id' => fn () => $customers->random()->id,
-            'doc_style_id' => fn () => $docStyles->random()->id,
-        ])->each(function ($invoice) use ($products) {
-            $selectedProducts = $products->random(rand(1, 5));
-            foreach ($selectedProducts as $product) {
-                $invoice->products()->attach($product->id, [
-                    'quantity' => rand(1, 20),
-                ]);
-            }
-        });
+        Invoice::factory(50)
+            ->create([
+                'customer_id' => fn() => $customers->random()->id,
+                'doc_style_id' => fn() => $docStyles->random()->id,
+            ])
+            ->each(function ($invoice) use ($products) {
+                $selectedProducts = $products->random(rand(1, 5));
+
+                $totalAmount = 0;
+                foreach ($selectedProducts as $product) {
+                    $quantity = rand(1, 20);
+                    $subtotal = $product->price * (1 - $product->discount / 100) * $quantity;
+                    $totalAmount += $subtotal;
+
+                    $invoice->products()->attach($product->id, [
+                        'quantity' => $quantity,
+                    ]);
+                }
+
+                $invoice->update(['total_amount' => $totalAmount * (1 + Company::first()->tax_rate)]);
+            });
 
         $users = User::all();
         $invoices = Invoice::all();
 
         Log::factory(30)->create([
-            'user_id' => fn () => $users->random()->id,
-            'invoice_id' => fn () => $invoices->random()->id,
+            'user_id' => fn() => $users->random()->id,
+            'invoice_id' => fn() => $invoices->random()->id,
         ]);
     }
 }
