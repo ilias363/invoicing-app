@@ -196,6 +196,7 @@ class InvoiceController extends Controller
         }
 
         $invoice->status = 'denied';
+        $invoice->payment_status = 'cancelled';
         $invoice->save();
 
         $user = Auth::user();
@@ -426,7 +427,7 @@ class InvoiceController extends Controller
             // Prepare log data
             $logData = new Request([
                 'time_action' => now(),
-                'action' => 'Invoice number ' . $invoice_id . ' SENT to' . $customer_name . ' by ' . $user->role->name . ' ' . $user->last_name . ' ' . $user->first_name,
+                'action' => 'Invoice number ' . $invoice_id . ' SENT to ' . $customer_name . ' by ' . $user->role->name . ' ' . $user->last_name . ' ' . $user->first_name,
                 'user_id' => $user->id,
                 'invoice_id' => $invoice_id,
             ]);

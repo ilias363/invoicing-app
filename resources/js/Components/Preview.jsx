@@ -6,16 +6,19 @@ import { toWords } from "number-to-words";
 import FlashMessage from "./FlashMessage";
 
 const Preview = ({ company, invoice, docStyle, fonts }) => {
-    const { auth } = usePage().props;
+    const { auth, flash } = usePage().props;
     const [titleColor, setTitleColor] = useState(docStyle.title_color);
     const [tableColor, setTableColor] = useState(docStyle.table_head_color);
     const [font, setFont] = useState(docStyle.font_family);
     const [backgroundColor, setBackgroundColor] = useState(docStyle.bg_color);
+    const [isLoading, setIsLoading] = useState(false);
 
     // Generate PDF
     const generatePDF = (sendByEmail = false) => {
         const content = document.getElementById("invoice-preview");
         const options = { scale: sendByEmail ? 1 : 3 };
+
+        setIsLoading(true);
 
         html2canvas(content, options)
             .then((canvas) => {
@@ -32,12 +35,12 @@ const Preview = ({ company, invoice, docStyle, fonts }) => {
                       );
             })
             .catch((err) => {
-                alert(
-                    "An error occurred while generating the PDF. Please try again."
-                );
+                flash.error = "An error occurred while generating the PDF. Please try again."
                 console.error("PDF generation error:", err);
-            });
+            })
+            .finally(() => setIsLoading(false));
     };
+    
 
     const sendEmailToBackend = (pdfBase64) => {
         router.post(`/${auth.user.role.name}/invoices/send-invoice`, {
@@ -125,20 +128,29 @@ const Preview = ({ company, invoice, docStyle, fonts }) => {
                         className="w-full h-10 p-1"
                     />
                 </div>
+                {isLoading && (
+                    <div className="absolute inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50">
+                        <div className="text-white text-xl">
+                            Generating PDF...
+                        </div>
+                        <div className="w-10 h-10 border-4 border-t-transparent border-white rounded-full animate-spin ml-4"></div>
+                    </div>
+                )}
                 <button
                     onClick={() => generatePDF(false)}
                     className="mt-4 px-4 py-2 bg-[#2A2A2A] text-white rounded hover:bg-blue-700"
                 >
                     Download PDF
                 </button>
-                {auth.user.role.name === "admin" && invoice.status === 'approved' && (
-                    <button
-                        onClick={() => generatePDF(true)}
-                        className="my-4 px-4 py-2 bg-[#2A2A2A] text-white rounded hover:bg-blue-700"
-                    >
-                        Send by Email
-                    </button>
-                )}
+                {auth.user.role.name === "admin" &&
+                    invoice.status === "approved" && (
+                        <button
+                            onClick={() => generatePDF(true)}
+                            className="my-4 px-4 py-2 bg-[#2A2A2A] text-white rounded hover:bg-blue-700"
+                        >
+                            Send by Email
+                        </button>
+                    )}
             </aside>
 
             <main className="flex-1 p-6 ml-72">
@@ -157,7 +169,7 @@ const Preview = ({ company, invoice, docStyle, fonts }) => {
                     {/* Header */}
                     <div className="flex justify-between items-center mb-5">
                         <img
-                            src={"/logo_no_bg.png"}
+                            src={`data:image/png;base64,${company.logo}`}
                             alt="Company Logo"
                             className="max-h-20 mr-4"
                         />
