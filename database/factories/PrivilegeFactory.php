@@ -20,7 +20,17 @@ class PrivilegeFactory extends Factory
     public function definition(): array
     {
         return [
-            'name' => $this->faker->unique()->word,
+            'name' => $this->faker->randomElement([
+                'Manage Users',
+                'View Invoices',
+                'Edit Invoices',
+                'Manage Invoices',
+                'Create Sales Order',
+                'View Sales Orders',
+                'View Financial Records',
+                'Approve Invoices',
+                'Manage Roles',
+            ]),
         ];
     }
 }

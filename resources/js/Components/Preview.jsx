@@ -1,11 +1,12 @@
 import React, { useState } from "react";
-import { router } from "@inertiajs/react";
+import { router, usePage } from "@inertiajs/react";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 import { toWords } from "number-to-words";
 import FlashMessage from "./FlashMessage";
 
 const Preview = ({ company, invoice, docStyle, fonts }) => {
+    const { auth } = usePage().props;
     const [titleColor, setTitleColor] = useState(docStyle.title_color);
     const [tableColor, setTableColor] = useState(docStyle.table_head_color);
     const [font, setFont] = useState(docStyle.font_family);
@@ -39,7 +40,7 @@ const Preview = ({ company, invoice, docStyle, fonts }) => {
     };
 
     const sendEmailToBackend = (pdfBase64) => {
-        router.post("/admin/invoices/send-invoice", {
+        router.post(`/${auth.user.role.name}/invoices/send-invoice`, {
             pdfBase64: pdfBase64,
             invoice_id: invoice.id,
             customer_name:
@@ -130,12 +131,14 @@ const Preview = ({ company, invoice, docStyle, fonts }) => {
                 >
                     Download PDF
                 </button>
-                <button
-                    onClick={() => generatePDF(true)}
-                    className="my-4 px-4 py-2 bg-[#2A2A2A] text-white rounded hover:bg-blue-700"
-                >
-                    Send by Email
-                </button>
+                {auth.user.role.name === "admin" && invoice.status === 'approved' && (
+                    <button
+                        onClick={() => generatePDF(true)}
+                        className="my-4 px-4 py-2 bg-[#2A2A2A] text-white rounded hover:bg-blue-700"
+                    >
+                        Send by Email
+                    </button>
+                )}
             </aside>
 
             <main className="flex-1 p-6 ml-72">
