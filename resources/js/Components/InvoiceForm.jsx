@@ -14,7 +14,7 @@ const InvoiceForm = ({
         init_quantity: 0,
         quantity: 1,
     }));
-    console.log(productsData)
+    console.log(productsData);
     const { auth } = usePage().props;
     const [products, setProducts] = useState([]);
     const [address, setAddress] = useState("");
@@ -37,6 +37,7 @@ const InvoiceForm = ({
                   invoice_date: invoice_data.invoice_date,
                   due_date: invoice_data.due_date,
                   payment_method: invoice_data.payment_method,
+                  payment_status: invoice_data.payment_status,
                   notes: invoice_data.notes || "",
                   products: [],
               }
@@ -64,10 +65,21 @@ const InvoiceForm = ({
             data.products.forEach((product) => {
                 if (!product.quantity || product.quantity < 1) {
                     errors.products = "Quantity must be at least 1.";
-                } else if (toCreate && (product.quantity > product.stock_quantity)) {
+                } else if (
+                    toCreate &&
+                    product.quantity > product.stock_quantity
+                ) {
                     errors.products = `The quantity for product ${product.name} must not exceed the stock quantity (${product.stock_quantity}).`;
-                } else if (!toCreate && (product.quantity > product.stock_quantity + product.init_quantity)) {
-                    errors.products = `The quantity for product ${product.name} must not exceed the stock quantity (${product.stock_quantity + product.init_quantity}).`;
+                } else if (
+                    !toCreate &&
+                    product.quantity >
+                        product.stock_quantity + product.init_quantity
+                ) {
+                    errors.products = `The quantity for product ${
+                        product.name
+                    } must not exceed the stock quantity (${
+                        product.stock_quantity + product.init_quantity
+                    }).`;
                 }
             });
         }
@@ -78,7 +90,11 @@ const InvoiceForm = ({
         setError(errors);
 
         if (Object.keys(errors).length === 0) {
-            toCreate ? post(`/${auth.user.role.name}/create-invoice`) : post(`/${auth.user.role.name}/invoices/${invoice_data.id}/edit`);
+            toCreate
+                ? post(`/${auth.user.role.name}/create-invoice`)
+                : post(
+                      `/${auth.user.role.name}/invoices/${invoice_data.id}/edit`
+                  );
         }
     };
 
@@ -181,7 +197,6 @@ const InvoiceForm = ({
                     };
                 });
 
-            
             setData("products", matchingProducts);
             setProducts(matchingProducts);
         }
@@ -297,7 +312,7 @@ const InvoiceForm = ({
                         onChange={(e) =>
                             setData("payment_method", e.target.value)
                         }
-                        className="w-full border p-2"
+                        className="w-full border p-2 mb-2"
                     >
                         <option value="Credit Card">Credit Card</option>
                         <option value="Bank Transfer">Bank</option>
@@ -307,6 +322,29 @@ const InvoiceForm = ({
                         <span className="text-sm text-red-600">
                             {errors.payment_method}
                         </span>
+                    )}
+                    {!toCreate && (
+                        <>
+                            <label className="block font-bold mb-1">
+                                Payment Status
+                            </label>
+                            <select
+                                value={data.payment_status}
+                                onChange={(e) =>
+                                    setData("payment_status", e.target.value)
+                                }
+                                className="w-full border p-2"
+                            >
+                                <option value="pending">Pending</option>
+                                <option value="paid">Paid</option>
+                                <option value="cancelled">Cancelled</option>
+                            </select>
+                            {errors.payment_status && (
+                                <span className="text-sm text-red-600">
+                                    {errors.payment_status}
+                                </span>
+                            )}
+                        </>
                     )}
                 </div>
             </div>
@@ -375,7 +413,12 @@ const InvoiceForm = ({
                                 <input
                                     type="number"
                                     min={1}
-                                    max={product.stock_quantity + (product.init_quantity ? product.init_quantity : 0)}
+                                    max={
+                                        product.stock_quantity +
+                                        (product.init_quantity
+                                            ? product.init_quantity
+                                            : 0)
+                                    }
                                     value={product.quantity}
                                     onChange={(e) =>
                                         handleProductChange(

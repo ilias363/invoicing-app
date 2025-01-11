@@ -10,7 +10,10 @@ function Header() {
         <header className="bg-[#2A2A2A] sticky top-0 left-0 w-full z-50">
             <nav className="flex items-center justify-between px-6 py-2">
                 {/* Logo */}
-                <a href={`/${auth.user.role.name}/dashboard`} className="w-2/12">
+                <a
+                    href={`/${auth.user.role.name}/dashboard`}
+                    className="w-2/12"
+                >
                     <img src={logoSrc} alt="Logo" className="w-auto h-10" />
                 </a>
 
@@ -29,7 +32,9 @@ function Header() {
                         >
                             Invoices
                         </a>
-                        {["admin", "salesman"].includes(auth.user.role.name) && (
+                        {["admin", "salesman"].includes(
+                            auth.user.role.name
+                        ) && (
                             <a
                                 href={`/${auth.user.role.name}/products`}
                                 className="hover:text-[#ACACAC] text-white tracking-widest cursor-pointer"
@@ -43,13 +48,21 @@ function Header() {
                         >
                             Customers
                         </a>
-                        {auth.user.role.name === 'admin' && (
-                            <a
-                                href={`/${auth.user.role.name}/users`}
-                                className="hover:text-[#ACACAC] text-white tracking-widest cursor-pointer"
-                            >
-                                Users Management
-                            </a>
+                        {auth.user.role.name === "admin" && (
+                            <>
+                                <a
+                                    href={`/${auth.user.role.name}/users`}
+                                    className="hover:text-[#ACACAC] text-white tracking-widest cursor-pointer"
+                                >
+                                    Users Management
+                                </a>
+                                <a
+                                    href={`/${auth.user.role.name}/company/edit`}
+                                    className="hover:text-[#ACACAC] text-white tracking-widest cursor-pointer"
+                                >
+                                    Company
+                                </a>
+                            </>
                         )}
                     </ul>
                 </div>
