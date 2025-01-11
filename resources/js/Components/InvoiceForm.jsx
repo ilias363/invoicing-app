@@ -11,8 +11,10 @@ const InvoiceForm = ({
 }) => {
     productsData = productsData.map((product) => ({
         ...product,
+        init_quantity: 0,
         quantity: 1,
     }));
+    console.log(productsData)
     const { auth } = usePage().props;
     const [products, setProducts] = useState([]);
     const [address, setAddress] = useState("");
@@ -35,7 +37,7 @@ const InvoiceForm = ({
                   invoice_date: invoice_data.invoice_date,
                   due_date: invoice_data.due_date,
                   payment_method: invoice_data.payment_method,
-                  notes: invoice_data.notes,
+                  notes: invoice_data.notes || "",
                   products: [],
               }
     );
@@ -62,8 +64,10 @@ const InvoiceForm = ({
             data.products.forEach((product) => {
                 if (!product.quantity || product.quantity < 1) {
                     errors.products = "Quantity must be at least 1.";
-                } else if (toCreate && product.quantity > product.stock_quantity) {
+                } else if (toCreate && (product.quantity > product.stock_quantity)) {
                     errors.products = `The quantity for product ${product.name} must not exceed the stock quantity (${product.stock_quantity}).`;
+                } else if (!toCreate && (product.quantity > product.stock_quantity + product.init_quantity)) {
+                    errors.products = `The quantity for product ${product.name} must not exceed the stock quantity (${product.stock_quantity + product.init_quantity}).`;
                 }
             });
         }
@@ -172,6 +176,7 @@ const InvoiceForm = ({
                     );
                     return {
                         ...product,
+                        init_quantity: matchingInvoiceProduct.quantity,
                         quantity: matchingInvoiceProduct.quantity,
                     };
                 });
@@ -370,7 +375,7 @@ const InvoiceForm = ({
                                 <input
                                     type="number"
                                     min={1}
-                                    max={product.stock_quantity}
+                                    max={product.stock_quantity + (product.init_quantity ? product.init_quantity : 0)}
                                     value={product.quantity}
                                     onChange={(e) =>
                                         handleProductChange(

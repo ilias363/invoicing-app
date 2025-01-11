@@ -286,6 +286,7 @@ class InvoiceController extends Controller
             'products' => 'required|array|min:1',
             'products.*.id' => 'required|exists:products,id',
             'products.*.quantity' => 'required|integer|min:1',
+            'products.*.init_quantity' => '',
         ], [
             'customer_id.required' => 'Customer selection is required.',
             'customer_id.exists' => 'The selected customer does not exist.',
@@ -305,8 +306,6 @@ class InvoiceController extends Controller
             'products.*.quantity.min' => 'The quantity must be at least 1.',
         ]);
 
-        // dd($validatedData);
-
         DB::beginTransaction();
 
         try {
@@ -324,13 +323,14 @@ class InvoiceController extends Controller
             ]);
 
             // Rollback stock quantities for previous products
-            foreach ($invoice->products as $existingProduct) {
+            $previousProducts = $invoice->products()->withPivot('quantity')->get();
+            foreach ($previousProducts as $existingProduct) {
                 $productModel = Product::findOrFail($existingProduct->id);
-                $productModel->stock_quantity += $existingProduct->quantity;
+                $productModel->stock_quantity += $existingProduct->pivot->quantity;
                 $productModel->save();
             }
 
-            // Remove previous products
+            // Detach previous products
             $invoice->products()->detach();
 
             $totalAmount = 0;
@@ -340,6 +340,7 @@ class InvoiceController extends Controller
                 $productModel = Product::findOrFail($product['id']);
                 $totalAmount += $productModel->price * (1 - ($productModel->discount / 100)) * $product['quantity'];
 
+                // Attach new product with its quantity
                 $invoice->products()->attach($product['id'], [
                     'quantity' => $product['quantity'],
                 ]);
@@ -367,11 +368,12 @@ class InvoiceController extends Controller
 
             $logController = new LogController();
             $logController->store($logData);
+
             return redirect()->route($user->role->name . '.invoices')->with('success', 'Invoice successfully updated.');
         } catch (\Exception $e) {
             DB::rollBack();
 
-            return redirect()->back()->with('error', 'Error updating the invoice.');
+            return redirect()->back()->with('error', $e->getMessage());
         }
     }
 
