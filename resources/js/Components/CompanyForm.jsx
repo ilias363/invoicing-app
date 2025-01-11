@@ -12,7 +12,6 @@ const CompanyForm = ({ company }) => {
         tax_rate: company.tax_rate || "",
         logo: "data:image/png;base64," + company.logo || "",
     });
-    console.log(data.logo);
 
     const handleChange = (e) => {
         const { name, value, files } = e.target;

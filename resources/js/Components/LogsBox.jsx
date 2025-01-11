@@ -17,7 +17,7 @@ const LogsBox = ({ logs,roles }) => {
         ) : (
           <ul>
             {recentLogs.map((log) => (
-              <>
+              <div key={log.id}>
               <pre>{roles.filter((role) => role.id === log.user.role_id)[0].name}</pre>
               <li
                 key={log.id}
@@ -30,7 +30,7 @@ const LogsBox = ({ logs,roles }) => {
                 <p className="text-sm text-gray-600">{log.action}</p>
                 <p className="mt-2 text-xs text-gray-500">Time: {new Date(log.time_action).toLocaleString()}</p>
               </div>
-              </li></>
+              </li></div>
             ))}
           </ul>
         )}
