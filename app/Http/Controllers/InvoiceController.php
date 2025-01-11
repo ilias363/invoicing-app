@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Mail\InvoiceMail;
 use App\Models\Company;
 use App\Models\Customer;
+use App\Models\DocStyle;
 use App\Models\Invoice;
 use App\Models\Product;
 use Illuminate\Http\Request;
@@ -215,6 +216,28 @@ class InvoiceController extends Controller
         return redirect()->back()->with('success', 'Invoice denied successfully.');
     }
 
+    public function assignDocStyle(Request $request, $id)
+    {
+        $validated = $request->validate([
+            'font_family' => 'required',
+            'title_color' => 'required|string|max:30',
+            'table_head_color' => 'required|string|max:30',
+            'bg_color' => 'required|string|max:30',
+        ]);
+        
+        try {
+            $invoice = Invoice::findOrFail($id);
+            $docStyle = DocStyle::create($validated);
+            
+            $invoice->doc_style_id = $docStyle->id;
+            $invoice->save();
+            
+            return redirect()->back()->with('success', 'Layout saved to the Invoice successfully.');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Error saving layout: '.$e->getMessage());
+        }
+    }
+
     /**
      * Display the specified resource.
      */
@@ -228,12 +251,14 @@ class InvoiceController extends Controller
                     $query->withPivot('quantity');
                 }
             ])->findOrFail($id);
-            $docStyle = $invoice->doc_style ?? [
+
+            $docStyle = $invoice->docStyle()->get()->first() ?? [
                 'font_family' => 'Lato, sans-serif',
                 'title_color' => '#2A2A2A',
                 'table_head_color' => '#000000',
                 'bg_color' => '#ffffff'
             ];
+
             $fonts = [
                 'Lato, sans-serif',
                 'Arial, sans-serif',
@@ -248,7 +273,7 @@ class InvoiceController extends Controller
                 'fonts' => $fonts,
             ]);
         } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Invoice not found.');
+            return redirect()->back()->with('error', 'Error fetching the invoice.');
         }
     }
 

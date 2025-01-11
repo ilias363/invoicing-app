@@ -90,7 +90,6 @@ class DatabaseSeeder extends Seeder
         Invoice::factory(50)
             ->create([
                 'customer_id' => fn() => $customers->random()->id,
-                'doc_style_id' => fn() => $docStyles->random()->id,
             ])
             ->each(function ($invoice) use ($products) {
                 $selectedProducts = $products->random(rand(1, 5));

@@ -14,6 +14,7 @@ Route::middleware(['auth', 'role:accountant'])->prefix('accountant')->as('accoun
     Route::get('invoices/{id}/edit', [InvoiceController::class, 'edit'])->name('invoices.edit');
     Route::post('invoices/{id}/edit', [InvoiceController::class, 'update']);
     Route::delete('invoices/{id}/delete', [InvoiceController::class, 'destroy'])->name('invoices.destroy');
+    Route::post('invoices/{id}/doc-style', [InvoiceController::class, 'assignDocStyle']);
 
     // Customer Routes
     Route::get('customers', [CustomerController::class, 'index'])->name('customers');

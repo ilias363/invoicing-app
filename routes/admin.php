@@ -20,6 +20,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->as('admin.')->group(
     Route::get('invoices/{id}/edit', [InvoiceController::class, 'edit'])->name('invoices.edit');
     Route::post('invoices/{id}/edit', [InvoiceController::class, 'update']);
     Route::delete('invoices/{id}/delete', [InvoiceController::class, 'destroy'])->name('invoices.destroy');
+    Route::post('invoices/{id}/doc-style', [InvoiceController::class, 'assignDocStyle']);
     Route::post('invoices/{id}/approve', [InvoiceController::class, 'approve'])->name('invoices.approve');
     Route::post('invoices/{id}/deny', [InvoiceController::class, 'deny'])->name('invoices.deny');
     Route::post('invoices/send-invoice', [InvoiceController::class, 'sendInvoice'])->name('invoices.send-invoice');

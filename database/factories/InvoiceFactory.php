@@ -46,7 +46,7 @@ class InvoiceFactory extends Factory
             'payment_method' => $this->faker->randomElement(['Credit Card', 'Bank Transfer', 'Cash']),
             'tax' => $taxRate,
             'customer_id' => Customer::factory(), 
-            'doc_style_id' => DocStyle::factory(),
+            'doc_style_id' => null,
         ];
     }
 }

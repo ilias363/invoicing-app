@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { router, usePage } from "@inertiajs/react";
+import { router, usePage, useForm } from "@inertiajs/react";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 import { toWords } from "number-to-words";
@@ -7,11 +7,24 @@ import FlashMessage from "./FlashMessage";
 
 const Preview = ({ company, invoice, docStyle, fonts }) => {
     const { auth, flash } = usePage().props;
-    const [titleColor, setTitleColor] = useState(docStyle.title_color);
-    const [tableColor, setTableColor] = useState(docStyle.table_head_color);
-    const [font, setFont] = useState(docStyle.font_family);
-    const [backgroundColor, setBackgroundColor] = useState(docStyle.bg_color);
     const [isLoading, setIsLoading] = useState(false);
+    console.log(docStyle);
+
+    const { data, setData, post, processing, errors } = useForm({
+        font_family: docStyle.font_family,
+        title_color: docStyle.title_color,
+        table_head_color: docStyle.table_head_color,
+        bg_color: docStyle.bg_color,
+    });
+
+    const handleChange = (e) => {
+        setData(e.target.name, e.target.value);
+    };
+
+    const handleDocStyleSubmit = (e) => {
+        e.preventDefault();
+        post(`/${auth.user.role.name}/invoices/${invoice.id}/doc-style`);
+    };
 
     // Generate PDF
     const generatePDF = (sendByEmail = false) => {
@@ -35,12 +48,12 @@ const Preview = ({ company, invoice, docStyle, fonts }) => {
                       );
             })
             .catch((err) => {
-                flash.error = "An error occurred while generating the PDF. Please try again."
+                flash.error =
+                    "An error occurred while generating the PDF. Please try again.";
                 console.error("PDF generation error:", err);
             })
             .finally(() => setIsLoading(false));
     };
-    
 
     const sendEmailToBackend = (pdfBase64) => {
         router.post(`/${auth.user.role.name}/invoices/send-invoice`, {
@@ -72,8 +85,20 @@ const Preview = ({ company, invoice, docStyle, fonts }) => {
 
     return (
         <div className="flex w-full">
-            <aside className="w-[20%] bg-gray-100 p-4 border-r overflow-y-auto fixed h-full flex flex-col">
-                <h2 className="text-lg font-bold mb-4">Configure Layout</h2>
+            <form
+                onSubmit={handleDocStyleSubmit}
+                className="w-[20%] bg-gray-100 p-4 border-r overflow-y-auto fixed h-full flex flex-col"
+            >
+                <div className="flex justify-between mb-4">
+                    <h2 className="text-lg font-bold">Configure Layout</h2>
+                    <button
+                        type="submit"
+                        className="px-2 py-1 bg-[#2A2A2A] text-white rounded hover:bg-blue-700"
+                        disabled={processing}
+                    >
+                        Save Layout
+                    </button>
+                </div>
 
                 <div className="mb-4">
                     <label className="block font-semibold mb-1">
@@ -81,10 +106,16 @@ const Preview = ({ company, invoice, docStyle, fonts }) => {
                     </label>
                     <input
                         type="color"
-                        value={titleColor}
-                        onChange={(e) => setTitleColor(e.target.value)}
+                        name="title_color"
+                        value={data.title_color}
+                        onChange={handleChange}
                         className="w-full h-10 p-1"
                     />
+                    {errors.title_color && (
+                        <p className="text-red-500 text-sm">
+                            {errors.title_color.message}
+                        </p>
+                    )}
                 </div>
 
                 <div className="mb-4">
@@ -93,17 +124,24 @@ const Preview = ({ company, invoice, docStyle, fonts }) => {
                     </label>
                     <input
                         type="color"
-                        value={tableColor}
-                        onChange={(e) => setTableColor(e.target.value)}
+                        name="table_head_color"
+                        value={data.table_head_color}
+                        onChange={handleChange}
                         className="w-full h-10 p-1"
                     />
+                    {errors.table_head_color && (
+                        <p className="text-red-500 text-sm">
+                            {errors.table_head_color.message}
+                        </p>
+                    )}
                 </div>
 
                 <div className="mb-4">
                     <label className="block font-semibold mb-1">Font</label>
                     <select
-                        value={font}
-                        onChange={(e) => setFont(e.target.value)}
+                        name="font_family"
+                        value={data.font_family}
+                        onChange={handleChange}
                         className="w-full border rounded p-2"
                     >
                         {fonts.map((font) => {
@@ -115,6 +153,11 @@ const Preview = ({ company, invoice, docStyle, fonts }) => {
                             );
                         })}
                     </select>
+                    {errors.font_family && (
+                        <p className="text-red-500 text-sm">
+                            {errors.font_family.message}
+                        </p>
+                    )}
                 </div>
 
                 <div className="mb-4">
@@ -123,11 +166,18 @@ const Preview = ({ company, invoice, docStyle, fonts }) => {
                     </label>
                     <input
                         type="color"
-                        value={backgroundColor}
-                        onChange={(e) => setBackgroundColor(e.target.value)}
+                        name="bg_color"
+                        value={data.bg_color}
+                        onChange={handleChange}
                         className="w-full h-10 p-1"
                     />
+                    {errors.bg_color && (
+                        <p className="text-red-500 text-sm">
+                            {errors.bg_color.message}
+                        </p>
+                    )}
                 </div>
+
                 {isLoading && (
                     <div className="absolute inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50">
                         <div className="text-white text-xl">
@@ -136,22 +186,26 @@ const Preview = ({ company, invoice, docStyle, fonts }) => {
                         <div className="w-10 h-10 border-4 border-t-transparent border-white rounded-full animate-spin ml-4"></div>
                     </div>
                 )}
+
                 <button
+                    type="submit"
                     onClick={() => generatePDF(false)}
                     className="mt-4 px-4 py-2 bg-[#2A2A2A] text-white rounded hover:bg-blue-700"
                 >
                     Download PDF
                 </button>
+
                 {auth.user.role.name === "admin" &&
                     invoice.status === "approved" && (
                         <button
+                            type="submit"
                             onClick={() => generatePDF(true)}
                             className="my-4 px-4 py-2 bg-[#2A2A2A] text-white rounded hover:bg-blue-700"
                         >
                             Send by Email
                         </button>
                     )}
-            </aside>
+            </form>
 
             <main className="flex-1 p-6 ml-72">
                 <FlashMessage />
@@ -162,8 +216,8 @@ const Preview = ({ company, invoice, docStyle, fonts }) => {
                     id="invoice-preview"
                     className="p-6 border rounded-lg bg-white mx-auto w-[210mm] h-[297mm]"
                     style={{
-                        fontFamily: font,
-                        backgroundColor: backgroundColor,
+                        fontFamily: data.font_family,
+                        backgroundColor: data.bg_color,
                     }}
                 >
                     {/* Header */}
@@ -186,7 +240,7 @@ const Preview = ({ company, invoice, docStyle, fonts }) => {
                     <div className="text-right mb-5">
                         <h1
                             className="text-3xl font-bold"
-                            style={{ color: titleColor }}
+                            style={{ color: data.title_color }}
                         >
                             Invoice{" "}
                             {`INV-${invoice.id.toString().padStart(4, "0")}`}
@@ -218,7 +272,7 @@ const Preview = ({ company, invoice, docStyle, fonts }) => {
                         <thead>
                             <tr
                                 style={{
-                                    backgroundColor: tableColor,
+                                    backgroundColor: data.table_head_color,
                                     color: "#FFF",
                                 }}
                             >

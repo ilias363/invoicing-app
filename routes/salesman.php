@@ -11,6 +11,7 @@ Route::middleware(['auth', 'role:salesman'])->prefix('salesman')->as('salesman.'
     Route::get('invoices/{id}/preview', [InvoiceController::class, 'show'])->name('invoices.preview');
     Route::get('create-invoice', [InvoiceController::class, 'create'])->name('create-invoice');
     Route::post('create-invoice', [InvoiceController::class, 'store']);
+    Route::post('invoices/{id}/doc-style', [InvoiceController::class, 'assignDocStyle']);
 
     // Product Routes
     Route::get('products', [ProductController::class, 'index'])->name('products');
