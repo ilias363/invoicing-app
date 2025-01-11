@@ -224,17 +224,17 @@ class InvoiceController extends Controller
             'table_head_color' => 'required|string|max:30',
             'bg_color' => 'required|string|max:30',
         ]);
-        
+
         try {
             $invoice = Invoice::findOrFail($id);
             $docStyle = DocStyle::create($validated);
-            
+
             $invoice->doc_style_id = $docStyle->id;
             $invoice->save();
-            
+
             return redirect()->back()->with('success', 'Layout saved to the Invoice successfully.');
         } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Error saving layout: '.$e->getMessage());
+            return redirect()->back()->with('error', 'Error saving layout: ' . $e->getMessage());
         }
     }
 
@@ -307,6 +307,7 @@ class InvoiceController extends Controller
             'invoice_date' => 'required|date',
             'due_date' => 'nullable|date|after_or_equal:invoice_date',
             'payment_method' => 'required|in:Credit Card,Bank Transfer,Cash',
+            'payment_status' => 'required|in:pending,paid,cancelled',
             'notes' => 'nullable|string|max:500',
             'products' => 'required|array|min:1',
             'products.*.id' => 'required|exists:products,id',
@@ -321,6 +322,8 @@ class InvoiceController extends Controller
             'due_date.after_or_equal' => 'The due date cannot be earlier than the invoice date.',
             'payment_method.required' => 'A payment method is required.',
             'payment_method.in' => 'The selected payment method is invalid.',
+            'payment_status.required' => 'A payment status is required.',
+            'payment_status.in' => 'The selected payment status is invalid.',
             'notes.string' => 'Notes must be a valid string.',
             'products.required' => 'At least one product is required.',
             'products.min' => 'You must add at least one product.',
@@ -330,6 +333,8 @@ class InvoiceController extends Controller
             'products.*.quantity.integer' => 'The quantity must be a valid integer.',
             'products.*.quantity.min' => 'The quantity must be at least 1.',
         ]);
+
+        // dd($validatedData);
 
         DB::beginTransaction();
 
@@ -342,9 +347,9 @@ class InvoiceController extends Controller
                 'invoice_date' => $validatedData['invoice_date'],
                 'due_date' => $validatedData['due_date'],
                 'payment_method' => $validatedData['payment_method'],
+                'payment_status' => $validatedData['payment_status'],
                 'notes' => $validatedData['notes'],
                 'status' => 'pending',
-                'payment_status' => 'pending',
             ]);
 
             // Rollback stock quantities for previous products

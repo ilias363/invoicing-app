@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\{
+    CompanyController,
     DashboardController,
     InvoiceController,
     ProductController,
@@ -11,6 +12,10 @@ use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->as('admin.')->group(function () {
     Route::get('dashboard', [DashboardController::class, 'index'])->name('home');
+
+    // Company Routes
+    Route::get('company/edit', [CompanyController::class, 'edit'])->name('company.edit');
+    Route::post('company/edit', [CompanyController::class, 'update']);
 
     // Invoice Routes
     Route::get('invoices', [InvoiceController::class, 'index'])->name('invoices');
