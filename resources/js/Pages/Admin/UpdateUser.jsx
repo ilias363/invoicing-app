@@ -2,7 +2,7 @@ import React, { use } from "react";
 import Header from "@/Components/Header";
 import UserForm from "@/Components/UserForm";
 
-const UpdateUser = ({ userToedit }) => {
+const UpdateUser = ({ userToedit , roles}) => {
     const user_data = {
         first_name: userToedit.first_name,
         last_name: userToedit.last_name,

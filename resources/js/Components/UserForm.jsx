@@ -1,7 +1,7 @@
 import React from "react";
 import { useForm } from "@inertiajs/react";
 
-const UserForm = ({user_data,toCreate}) => {
+const UserForm = ({user_data,toCreate,roles}) => {
   const { data, setData, post, errors, processing } = useForm(user_data);
 
   const handleChange = (e) => {
@@ -137,9 +137,11 @@ const UserForm = ({user_data,toCreate}) => {
           required
         >
           <option value="">Select Role</option>
-          <option value="1">Admin</option>
-          <option value="2">Accountant</option>
-          <option value="3">Salesman</option>
+          {roles.map((role) => (
+            <option key={role.id} value={role.id}>
+              {role.name}
+            </option>
+          ))}
         </select>
         {errors.role_id && <p className="text-red-500 text-sm">{errors.role_id}</p>}
       </div>
