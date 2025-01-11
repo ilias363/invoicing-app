@@ -17,7 +17,7 @@ const Histogram = ({ data }) => {
             {
                 label: "Pending",
                 data: data.pending,
-                backgroundColor: "#FFEB3B",
+                backgroundColor: "#22cac7",
                 maxBarThickness: 50,
             },
             {
@@ -53,7 +53,7 @@ const Histogram = ({ data }) => {
                     scales: {
                         y: {
                             beginAtZero: true,
-                            stacked: true,
+                            // stacked: true,
                             title: {
                                 display: true,
                                 text: "Number of Invoices",
@@ -68,7 +68,7 @@ const Histogram = ({ data }) => {
                                     size: 14,
                                 }
                             },
-                            stacked: true,
+                            // stacked: true,
                             title: {
                                 display: true,
                                 text: "Months",
