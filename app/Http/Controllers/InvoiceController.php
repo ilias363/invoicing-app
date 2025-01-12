@@ -434,7 +434,8 @@ class InvoiceController extends Controller
     {
         $invoice_id = $request->invoice_id;
         $customer_name = $request->customer_name;
-        $email = $request->email;
+        // $email = $request->email;
+        $email = config('mail.test_mail_to_send_to');
         $pdfBase64 = $request->pdfBase64;
 
         if (!$pdfBase64) {

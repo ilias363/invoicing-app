@@ -85,98 +85,97 @@ const Preview = ({ company, invoice, docStyle, fonts }) => {
 
     return (
         <div className="flex w-full">
-            <form
-                onSubmit={handleDocStyleSubmit}
-                className="w-[20%] bg-gray-100 p-4 border-r overflow-y-auto fixed h-full flex flex-col"
-            >
-                <div className="flex justify-between mb-4">
-                    <h2 className="text-lg font-bold">Configure Layout</h2>
-                    <button
-                        type="submit"
-                        className="px-2 py-1 bg-[#2A2A2A] text-white rounded hover:bg-blue-700"
-                        disabled={processing}
-                    >
-                        Save Layout
-                    </button>
-                </div>
+            <div className="w-[20%] bg-gray-100 p-4 border-r overflow-y-auto fixed h-full flex flex-col">
+                <form onSubmit={handleDocStyleSubmit}>
+                    <div className="flex justify-between mb-4">
+                        <h2 className="text-lg font-bold">Configure Layout</h2>
+                        <button
+                            type="submit"
+                            className="px-2 py-1 bg-[#2A2A2A] text-white rounded hover:bg-blue-700"
+                            disabled={processing}
+                        >
+                            Save Layout
+                        </button>
+                    </div>
 
-                <div className="mb-4">
-                    <label className="block font-semibold mb-1">
-                        Title Color
-                    </label>
-                    <input
-                        type="color"
-                        name="title_color"
-                        value={data.title_color}
-                        onChange={handleChange}
-                        className="w-full h-10 p-1"
-                    />
-                    {errors.title_color && (
-                        <p className="text-red-500 text-sm">
-                            {errors.title_color.message}
-                        </p>
-                    )}
-                </div>
+                    <div className="mb-4">
+                        <label className="block font-semibold mb-1">
+                            Title Color
+                        </label>
+                        <input
+                            type="color"
+                            name="title_color"
+                            value={data.title_color}
+                            onChange={handleChange}
+                            className="w-full h-10 p-1"
+                        />
+                        {errors.title_color && (
+                            <p className="text-red-500 text-sm">
+                                {errors.title_color.message}
+                            </p>
+                        )}
+                    </div>
 
-                <div className="mb-4">
-                    <label className="block font-semibold mb-1">
-                        Table Header Color
-                    </label>
-                    <input
-                        type="color"
-                        name="table_head_color"
-                        value={data.table_head_color}
-                        onChange={handleChange}
-                        className="w-full h-10 p-1"
-                    />
-                    {errors.table_head_color && (
-                        <p className="text-red-500 text-sm">
-                            {errors.table_head_color.message}
-                        </p>
-                    )}
-                </div>
+                    <div className="mb-4">
+                        <label className="block font-semibold mb-1">
+                            Table Header Color
+                        </label>
+                        <input
+                            type="color"
+                            name="table_head_color"
+                            value={data.table_head_color}
+                            onChange={handleChange}
+                            className="w-full h-10 p-1"
+                        />
+                        {errors.table_head_color && (
+                            <p className="text-red-500 text-sm">
+                                {errors.table_head_color.message}
+                            </p>
+                        )}
+                    </div>
 
-                <div className="mb-4">
-                    <label className="block font-semibold mb-1">Font</label>
-                    <select
-                        name="font_family"
-                        value={data.font_family}
-                        onChange={handleChange}
-                        className="w-full border rounded p-2"
-                    >
-                        {fonts.map((font) => {
-                            const fontName = font.split(",")[0];
-                            return (
-                                <option key={font} value={font}>
-                                    {fontName}
-                                </option>
-                            );
-                        })}
-                    </select>
-                    {errors.font_family && (
-                        <p className="text-red-500 text-sm">
-                            {errors.font_family.message}
-                        </p>
-                    )}
-                </div>
+                    <div className="mb-4">
+                        <label className="block font-semibold mb-1">Font</label>
+                        <select
+                            name="font_family"
+                            value={data.font_family}
+                            onChange={handleChange}
+                            className="w-full border rounded p-2"
+                        >
+                            {fonts.map((font) => {
+                                const fontName = font.split(",")[0];
+                                return (
+                                    <option key={font} value={font}>
+                                        {fontName}
+                                    </option>
+                                );
+                            })}
+                        </select>
+                        {errors.font_family && (
+                            <p className="text-red-500 text-sm">
+                                {errors.font_family.message}
+                            </p>
+                        )}
+                    </div>
 
-                <div className="mb-4">
-                    <label className="block font-semibold mb-1">
-                        Background Color
-                    </label>
-                    <input
-                        type="color"
-                        name="bg_color"
-                        value={data.bg_color}
-                        onChange={handleChange}
-                        className="w-full h-10 p-1"
-                    />
-                    {errors.bg_color && (
-                        <p className="text-red-500 text-sm">
-                            {errors.bg_color.message}
-                        </p>
-                    )}
-                </div>
+                    <div className="mb-4">
+                        <label className="block font-semibold mb-1">
+                            Background Color
+                        </label>
+                        <input
+                            type="color"
+                            name="bg_color"
+                            value={data.bg_color}
+                            onChange={handleChange}
+                            className="w-full h-10 p-1"
+                        />
+                        {errors.bg_color && (
+                            <p className="text-red-500 text-sm">
+                                {errors.bg_color.message}
+                            </p>
+                        )}
+                    </div>
+                </form>
 
                 {isLoading && (
                     <div className="absolute inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50">
@@ -188,7 +187,6 @@ const Preview = ({ company, invoice, docStyle, fonts }) => {
                 )}
 
                 <button
-                    type="submit"
                     onClick={() => generatePDF(false)}
                     className="mt-4 px-4 py-2 bg-[#2A2A2A] text-white rounded hover:bg-blue-700"
                 >
@@ -198,14 +196,13 @@ const Preview = ({ company, invoice, docStyle, fonts }) => {
                 {auth.user.role.name === "admin" &&
                     invoice.status === "approved" && (
                         <button
-                            type="submit"
                             onClick={() => generatePDF(true)}
                             className="my-4 px-4 py-2 bg-[#2A2A2A] text-white rounded hover:bg-blue-700"
                         >
                             Send by Email
                         </button>
                     )}
-            </form>
+            </div>
 
             <main className="flex-1 p-6 ml-72">
                 <FlashMessage />

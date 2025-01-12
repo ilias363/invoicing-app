@@ -48,13 +48,13 @@ return [
             'timeout' => null,
             'local_domain' => env('MAIL_EHLO_DOMAIN', parse_url(env('APP_URL', 'http://localhost'), PHP_URL_HOST)),
             'auth_mode'  => null,
-                'verify_peer' => false,
+            'verify_peer' => false,
         ],
 
         'ses' => [
             'transport' => 'ses',
         ],
-        
+
 
         'postmark' => [
             'transport' => 'postmark',
@@ -115,5 +115,7 @@ return [
         'address' => env('MAIL_FROM_ADDRESS', 'hello@example.com'),
         'name' => env('MAIL_FROM_NAME', 'Example'),
     ],
+
+    'test_mail_to_send_to' => env('TEST_MAIL_TO_SEND_TO', 'hello@example.com'),
 
 ];
