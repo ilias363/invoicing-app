@@ -105,7 +105,7 @@ class DatabaseSeeder extends Seeder
                     ]);
                 }
 
-                $invoice->update(['total_amount' => $totalAmount * (1 + Company::first()->tax_rate)]);
+                $invoice->update(['total_amount' => $totalAmount * (1 + Company::first()->tax_rate / 100)]);
             });
 
         Log::factory()->count(30)->create();
