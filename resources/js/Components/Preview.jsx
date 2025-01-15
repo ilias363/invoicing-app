@@ -37,7 +37,7 @@ const Preview = ({ company, invoice, docStyle, fonts }) => {
             .then((canvas) => {
                 const imgData = canvas.toDataURL("image/png");
                 const pdf = new jsPDF("p", "mm", "a4");
-                const imgWidth = 210; // A4 width in mm
+                const imgWidth = 210; // hadi A4
                 const imgHeight = (canvas.height * imgWidth) / canvas.width;
 
                 pdf.addImage(imgData, "PNG", 0, 0, imgWidth, imgHeight);
